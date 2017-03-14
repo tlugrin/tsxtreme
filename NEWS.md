@@ -1,6 +1,10 @@
 NEWS for package tsxtreme
 =========================
 
+version 0.3.1
+
+* fixed 'overloading ambiguities' generating compilation errors on SOLARIS.
+
 version 0.3 (1st CRAN release)
 
 * plot functions available for all approaches.
