@@ -1,8 +1,8 @@
 Package: tsxtreme
 Type: Package
 Title: Bayesian Modelling of Extremal Dependence in Time Series
-Version: 0.3.2.9000
-Date: 2021-04-21
+Version: 0.3.3
+Date: 2021-04-23
 Author: Thomas Lugrin
 Maintainer: Thomas Lugrin <thomas.lugrin@alumni.epfl.ch>
 Imports: evd, mvtnorm, stats, MASS, graphics, tictoc
