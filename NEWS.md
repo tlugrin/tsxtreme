@@ -1,6 +1,7 @@
 # tsxtreme 0.3.4
 
 * fixed an error due to _R_CXX_USE_NO_REMAP_=true becoming standard.
+* updated the NEWS file not conforming to the new accepted format
 
 # tsxtreme 0.3.3
 
