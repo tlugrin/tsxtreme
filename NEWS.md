@@ -1,6 +1,10 @@
 NEWS for package tsxtreme
 =========================
 
+version 0.3.5
+
+* fixed a bug in the computation of the Monte-Carlo integration
+
 version 0.3.3
 
 * fixed an error due to creating a binding in the base environment.
