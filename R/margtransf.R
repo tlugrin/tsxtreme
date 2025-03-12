@@ -1,4 +1,4 @@
-## Copyright (C) 2017 Thomas Lugrin
+## Copyright (C) 2017-2025 Thomas Lugrin
 ## Marginal transforms
 ## (Scope:) H+T/E+T fits, marginal transformations, thresholding
 ## List of functions: - format.ts

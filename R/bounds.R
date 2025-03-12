@@ -1,4 +1,4 @@
-## Copyright (C) 2017 Thomas Lugrin
+## Copyright (C) 2017-2025 Thomas Lugrin
 ## Compute Keef, Papastathopoulos & Tawn bounds on (a,b)
 ## (Scope:) Heffernan-Tawn model fit in 2 stages
 ## List of functions: - conditions.verify

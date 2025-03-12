@@ -1,6 +1,6 @@
 /*
  *  tsxtreme : Bayesian Modelling of Extremal Dependence in Time Series
- *  Copyright (C) 2017-2018   Thomas Lugrin
+ *  Copyright (C) 2017-2025   Thomas Lugrin
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,11 +29,11 @@ static R_NativePrimitiveArgType et_interface_t[] = {
    REALSXP, REALSXP, REALSXP, REALSXP, REALSXP,
    INTSXP, INTSXP, REALSXP, REALSXP, REALSXP,
    REALSXP, REALSXP, REALSXP, INTSXP, INTSXP,
-   INTSXP, REALSXP
+   INTSXP, REALSXP, REALSXP, REALSXP
 };
 
 const static R_CMethodDef R_CDef[] = {
-   CALLDEF(et_interface, 27, et_interface_t),
+   CALLDEF(et_interface, 29, et_interface_t),
    {NULL, NULL, 0}
 };
 

@@ -1,4 +1,4 @@
-## Copyright (C) 2017 Thomas Lugrin
+## Copyright (C) 2017-2025 Thomas Lugrin
 ## Functions related to H+T model
 ## (Scope:) Heffernan-Tawn model fit in 1 stage
 ## List of functions: - p.res

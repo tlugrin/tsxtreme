@@ -1,4 +1,4 @@
-## Copyright (C) 2017 Thomas Lugrin
+## Copyright (C) 2017-2025 Thomas Lugrin
 ## user interface for E+T fit
 ## (Scope:) Model fit in 2 stages
 ## List of functions: - theta2fit

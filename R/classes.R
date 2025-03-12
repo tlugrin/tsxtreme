@@ -1,4 +1,4 @@
-## Copyright (C) 2017 Thomas Lugrin
+## Copyright (C) 2017-2025 Thomas Lugrin
 ## Definition of methods and related functions
 ## (Scope:) single framework for 1- and 2-stage functions
 ## (Note:) summary is tricky especially when multi-dimensional!
@@ -248,12 +248,14 @@ bayesparams <- function(prop.a=0.02, prop.b=0.02,
                         prior.mu=c(0,10), prior.nu=c(2,1/2), prior.eta=c(2,2),
                         trunc=100, comp.saved=15,
                         maxit=30000, burn=5000, thin=1,
-                        adapt=5000, batch.size=125, mode=1){
+                        adapt=5000, batch.size=125,
+                        start.ab=c("guesstimate", "prior"), mode=1){
   x <- list(prop.a=prop.a, prop.b=prop.b,
-              prior.mu=prior.mu, prior.nu=prior.nu, prior.eta=prior.eta,
-              trunc=trunc, comp.saved=comp.saved,
-              maxit=maxit, burn=burn, thin=thin,
-              adapt=adapt, batch.size=batch.size, mode=mode)
+            prior.mu=prior.mu, prior.nu=prior.nu, prior.eta=prior.eta,
+            trunc=trunc, comp.saved=comp.saved,
+            maxit=maxit, burn=burn, thin=thin,
+            adapt=adapt, batch.size=batch.size, start.ab=start.ab[1],
+            mode=mode)
   class(x) <- "bayesparams"
   if(is.bayesparams(x)) return(x)
   else stop("Wrong type of argument. See help for details.")
@@ -264,7 +266,8 @@ is.bayesparams <- function(x){
   if(length(names(x))){
     names.bp <- c("prop.a","prop.b","prior.mu","prior.nu","prior.eta",
                   "trunc","comp.saved","maxit","burn","thin",
-                  "adapt","batch.size","mode")
+                  "adapt","batch.size","start.ab","mode")
+    st.ab <- c("guesstimate", "prior")
     conds <- names.bp %in% names(x)
     if(all(conds)){
       conds <- is.numeric(x$prop.a) && is.numeric(x$prop.b) &&
@@ -275,7 +278,9 @@ is.bayesparams <- function(x){
         length(x$trunc)==1 && is.int(x$trunc) && length(x$comp.saved)==1 && is.int(x$comp.saved) &&
         length(x$maxit)==1 && is.int(x$maxit) && length(x$burn)==1 && is.int(x$burn) &&
         length(x$thin)==1 && is.int(x$burn) && length(x$adapt)==1 && is.int(x$adapt) &&
-        length(x$batch.size)==1 && is.int(x$batch.size) && length(mode)==1 && x$mode %in% c(0,1,2)
+        length(x$batch.size)==1 && is.int(x$batch.size) &&
+        is.character(x$start.ab) && x$start.ab %in% st.ab &&
+        length(mode)==1 && x$mode %in% c(0,1,2)
       return(inherits(x, "bayesparams") && conds)
     }     
   }

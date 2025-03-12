@@ -1,4 +1,4 @@
-## Copyright (C) 2017 Thomas Lugrin
+## Copyright (C) 2017-2025 Thomas Lugrin
 ## user inteface for htfit class
 ## (Scope:) Fit H+T model using Bayesian semiparametrics
 ## List of functions: - depfit
@@ -22,7 +22,7 @@ depfit <- function(ts, u.mar=0, u.dep=u.mar, lapl=FALSE, method.mar=c("mle","mom
         prior.mu=par$prior.mu, prior.nu=par$prior.nu, prior.eta=par$prior.eta,
         trunc=par$trunc, comp.saved=par$comp.saved,
         maxit=par$maxit, burn=par$burn, thin=par$thin,
-        adapt=par$adapt, batch.size=par$batch.size,
+        adapt=par$adapt, batch.size=par$batch.size, start.ab=par$start.ab,
         mode=par$mode, submodel=submodel)
 }
 
@@ -37,6 +37,7 @@ depfit <- function(ts, u.mar=0, u.dep=u.mar, lapl=FALSE, method.mar=c("mle","mom
 ## >   thin: integer, thinning (1 means keeping all values)
 ## >   adapt: integer, used for RAMA on (a,b): 0 means no adaption, otherwise specifies when adaption stops
 ## >   batch.size: integer, size of batches for RAMA, between 100 and 1000 typically
+## >   start.ab: string, how starting values for alpha and beta should be chosen; either using a maximum likelihood fit ("guesstimate") or drawn from their prior distributions ("prior")
 ## >   mode: {0,1,2}, console output during computations, 0: debug mode - 1: normal mode - 2: silent mode
 ## >   submodel: string, structure imposed on (a,b) - defaults to "fom" (first order Markov)
 ## <   ret: list, MCMC traces
@@ -49,6 +50,7 @@ htfit <- function(data,
                   trunc=100, comp.saved=10,
                   maxit=10000, burn=2000, thin=4,
                   adapt=2000, batch.size=125,
+                  start.ab = c("guesstimate", "prior"),
                   mode=1, submodel=c("fom","none","ugm")){# "ugm": univariate Gaussian mixture
   n    <- dim(data)[1]
   nlag <- dim(data)[2]-1
@@ -64,6 +66,15 @@ htfit <- function(data,
   t.noo <- matrix(0, nrow=tr.len, ncol=comp.saved)
   t.noc <- numeric(tr.len)
   t.sd  <- array(0, dim=c(tr.len,8,nlag))#for RAMA
+  if(start.ab[1] == "guesstimate"){
+    fit2step <- ht2step(data) # lags > 1 will be properly initialised in C routine
+    start.a <- fit2step$a     # depending on [submodel]
+    start.b <- fit2step$b
+  }else if(start.ab[1] == "prior"){
+    start.a <- start.b <- rep(Inf,nlag) # will be properly initialised in C routine
+  }else{
+    stop("In htfit(): invalid starting value strategy for start.ab")
+  }
   if(submodel[1] == "ugm"){ submodel <- 0 }
   else if(submodel[1]=="fom"){ submodel <- 1 }
   else if(submodel[1]=="none"){ submodel <- 2 }
@@ -77,7 +88,8 @@ htfit <- function(data,
            as.integer(mode), as.integer(submodel),
            as.double(t.a), as.double(t.b), as.double(t.sig),
            as.double(t.mu), as.double(t.w), as.double(t.g),
-           as.integer(t.ci), as.integer(t.noo), as.integer(t.noc), as.double(t.sd))
+           as.integer(t.ci), as.integer(t.noo), as.integer(t.noc), as.double(t.sd),
+           as.double(start.a), as.double(start.b))
   ## format C output
   ret <- bayesfit()
   ret$a    <- matrix(fit[[18]], nrow=tr.len, ncol=nlag)

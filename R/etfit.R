@@ -1,5 +1,5 @@
-## Copyright (C) 2017 Thomas Lugrin
-## user inteface for etfit class
+## Copyright (C) 2017-2025 Thomas Lugrin
+## user interface for etfit class
 ## (Scope:) Fit Eastawn model using Bayesian semiparametrics
 ## List of functions: - thetafit
 ##                    - chifit

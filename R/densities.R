@@ -1,4 +1,4 @@
-## Copyright (C) 2017 Thomas Lugrin
+## Copyright (C) 2017-2025 Thomas Lugrin
 ## Implementation of current density/distribution/etc. functions
 ## (Scope:) Any
 ## List of functions: - dlapl

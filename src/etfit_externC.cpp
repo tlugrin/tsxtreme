@@ -1,6 +1,6 @@
 /*
  *  tsxtreme : Bayesian Modelling of Extremal Dependence in Time Series
- *  Copyright (C) 2017-2018   Thomas Lugrin
+ *  Copyright (C) 2017-2025   Thomas Lugrin
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,7 +30,8 @@ extern "C" {
                    double* mu_prior, double* nu_prior, double* eta_prior,
                    int* mode, int* spec,
                    double* t_a, double* t_b, double* t_sig, double* t_mu,
-                   double* t_w, double* t_gam, int* t_ci, int* t_noo, int* t_noc, double* t_sd){
+                   double* t_w, double* t_gam, int* t_ci, int* t_noo, int* t_noc, double* t_sd,
+                   double* start_a, double* start_b){
 
         //////////////////////////////////////////////////
         // FEED C++ CLASS & LAUNCH COMPUTATIONS
@@ -59,7 +60,8 @@ extern "C" {
         }
 
         ETfit fit(data, n, nlag, k, kred, maxit, burn, thin, adapt, batchsize,
-                  sd_propa, sd_propb, mu_prior, nu_prior, eta_prior, modeCpp, specCpp);
+                  sd_propa, sd_propb, mu_prior, nu_prior, eta_prior,
+                  start_a, start_b, modeCpp, specCpp);
         fit.run();
         const std::vector<ETpar> tr = fit.getTraces();
 

@@ -1,4 +1,4 @@
-## Copyright (C) 2017 Thomas Lugrin
+## Copyright (C) 2017-2025 Thomas Lugrin
 ## runs estimator for theta(x,m)
 ## (Scope:) empirical estimate to be compared to E+T typically
 ## List of functions: - runs

@@ -1,6 +1,6 @@
 /*
  *  tsxtreme : Bayesian Modelling of Extremal Dependence in Time Series
- *  Copyright (C) 2017-2018   Thomas Lugrin
+ *  Copyright (C) 2017-2025   Thomas Lugrin
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -78,6 +78,7 @@ public:
           int *burn, int *thin, int *adapt, int* batchsize,
           double *sd_propa, double *sd_propb,
           double *mu_prior, double *nu_prior, double *eta_prior,
+          double *start_a, double *start_b,
           tsxtreme::debmode const& mode, tsxtreme::submodel const& spec);
     ~ETfit();
 
@@ -137,8 +138,8 @@ private:
 
     //--------------------//
     // INITIALISATION METHODS
-    void initialise(const double* dataArr);                   //initialise _data_ matrix
-    void initialise();  //initialise _curr_
+    void initialise(const double* dataArr); //initialise _data_ matrix
+    void initialise(const double* start_a, const double* start_b); //initialise _curr_
 
 
 

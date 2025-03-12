@@ -1,4 +1,4 @@
-## Copyright (C) 2017 Thomas Lugrin
+## Copyright (C) 2017-2025 Thomas Lugrin
 ## Gathering functions from old files into one reference file
 ## (Scope:) Heffernan-Tawn model fit in 2 stages
 ## List of functions: - ht2fit

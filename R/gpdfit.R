@@ -1,4 +1,4 @@
-## Copyright (C) 2017 Thomas Lugrin
+## Copyright (C) 2017-2025 Thomas Lugrin
 ## Generalised Pareto distribution fit
 ## (Scope:) GPD fit, marginal transform
 ## List of functions: - nllh.gpd

@@ -1,6 +1,6 @@
 /*
  *  tsxtreme : Bayesian Modelling of Extremal Dependence in Time Series
- *  Copyright (C) 2017-2018   Thomas Lugrin
+ *  Copyright (C) 2017-2025   Thomas Lugrin
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@ ETfit::ETfit(double* data, int* n, int* nlag,
              int *burn, int *thin, int *adapt, int *batchsize,
              double* sd_propa, double* sd_propb, double* mu_prior,
              double *nu_prior, double *eta_prior,
+             double *start_a, double *start_b,
              const tsxtreme::debmode &mode, const tsxtreme::submodel &spec)
     : n(*n), nlag(*nlag), k(*k), kred(*kred),
       maxit(*maxit), burn(*burn), thin(*thin),
@@ -45,7 +46,7 @@ ETfit::ETfit(double* data, int* n, int* nlag,
     eta[0] = eta_prior[0]; eta[1] = eta_prior[1];
 
     initialise(data);
-    initialise();
+    initialise(start_a, start_b);
     // regions for RAMA: 5 for alpha + 3 for beta = 8
     if(spec == tsxtreme::none){
         curr.sd = std::vector<std::vector<double> >(this->nlag, std::vector<double>(8));
@@ -88,7 +89,7 @@ void ETfit::initialise(const double *dataArr){
     }
 }
 
-void ETfit::initialise(){
+void ETfit::initialise(const double *start_a, const double *start_b){
     curr.a.clear(); curr.b.clear();
     double bds[2];
 
@@ -99,10 +100,15 @@ void ETfit::initialise(){
         }
         acc_a.clear(); acc_b.clear();
     }else if(spec == tsxtreme::firstOrderMarkov){
-        bounds(false, 0, bds); // get bounds ok for beta=0
-        curr.a.push_back(runif(bds[0], bds[1]));
-        bounds(true, curr.a[0], bds); // satisfied only for first lag
-        curr.b.push_back(runif(bds[0], bds[1]));
+        if(start_a[0] > 1){ // draw from prior
+            bounds(false, 0, bds); // get bounds valid for beta=0
+            curr.a.push_back(runif(bds[0], bds[1]));
+            bounds(true, curr.a[0], bds); // satisfied only for first lag
+            curr.b.push_back(runif(bds[0], bds[1]));
+        }else{ // guesstimates as starting values
+            curr.a.push_back(start_a[0]);
+            curr.b.push_back(start_b[0]);
+        }
         for(unsigned int d = 1; d < nlag; d++){
             curr.a.push_back(pow(curr.a[0], d + 1.0));
             curr.b.push_back(curr.b[0]);
@@ -114,10 +120,15 @@ void ETfit::initialise(){
                 (1, std::vector<std::vector<double> >(3));//beta: RAMA, regions [0;0.1;0.9;1]
     }else if(spec == tsxtreme::none){
         for(unsigned int d = 0; d < nlag; d++){
-            bounds(false, 0, bds, d); // get bounds ok for beta=0
-            curr.a.push_back(runif(bds[0], bds[1]));
-            bounds(true, curr.a[d], bds, d);
-            curr.b.push_back(runif(bds[0], bds[1]));
+            if(start_a[0] > 1){ // draw from prior
+                bounds(false, 0, bds, d); // get bounds valid for beta=0
+                curr.a.push_back(runif(bds[0], bds[1]));
+                bounds(true, curr.a[d], bds, d);
+                curr.b.push_back(runif(bds[0], bds[1]));
+            }else{ // guesstimates
+                curr.a.push_back(start_a[d]);
+                curr.b.push_back(start_b[d]);
+            }
         }
         acc_a = std::vector<std::vector<std::vector<double> > >
                 (nlag, std::vector<std::vector<double> >(5));//alpha: RAMA, regions [-1;-0.9;-0.1;0.1;0.9;1]

@@ -1,4 +1,4 @@
-## Copyright (C) 2017 Thomas Lugrin
+## Copyright (C) 2017-2025 Thomas Lugrin
 ## tic and toc functions are provided by tictoc package,
 ## but need a wrapper around the latter
 ##################################################
