@@ -108,9 +108,8 @@ etfit <- function(data, R, S, probs, method,
       mesh.Z <- array(mesh.Z, dim=c(R,S,nlag))
       HZ      <- vapply(1:S, p.res, z=mesh.Z, mu=m, sig=s, w=w, FUN.VALUE=numeric(R))# [RxS]
       th.samp <- colMeans(HZ)# [S]
-      distr[i,] <- t(th.samp)
-      th[i,]    <- cbind(colMeans(th.samp), apply(th.samp, 2, median),
-                             t(apply(th.samp, 2, quantile, levels)))
+      distr[i,] <- th.samp
+      th[i,]    <- c(mean(th.samp), median(th.samp), quantile(th.samp, levels))
     }
   }
   # return and summaries

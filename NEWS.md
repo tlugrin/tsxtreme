@@ -1,12 +1,12 @@
 # tsxtreme 0.4.0
 
 * add option to set starting values for alpha and beta
+* fix bug in the computation of the Monte-Carlo integration
 * TOOD: migrate documenation to roxygen
 * TODO: update documentation throughout package
 * TODO: update code to conform to modern R conventions
-* TODO (MERGE): fix bug in Monte-Carlo integration
 
-# tsxtreme 0.3.4
+# version 0.3.4
 
 * fix an error due to _R_CXX_USE_NO_REMAP_=true becoming standard.
 * update the NEWS file not conforming to the new accepted format
