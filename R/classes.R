@@ -22,14 +22,26 @@
 
 ##################################################
 ## CLASS "STEPFIT"
-## constructor
+#' Estimates from the stepwise fit
+#' 
+#' Create, test or show objects of class "stepfit".
+#' 
+#' @param x an arbitrary \R object.
+#' @returns An object of class "stepfit" with the following elements:
+#'   \item{a, b }{Heffernan--Tawn model parameters of length `nlag`; \eqn{\alpha} controls the conditional extremal expectation, while \eqn{\beta} controls the conditional extremal expectation and variance.}
+#'   \item{res }{matrix of fitted residuals with `nlag` columns.}
+#'   \item{pars.se }{2-column matrix of estimated standard errors for \code{a} (first column) and \code{b} (second column), given by the hessian matrix of the likelihood function used in the first step of the inference procedure.}
+#'   \item{nlag }{number of lags.}
+#' @seealso [bayesfit()], [depmeasure()]
+#' @export
 stepfit <- function(){
   x <- list(a=numeric(0), b=numeric(0), res=matrix(0,nrow=1,ncol=1), pars.se=matrix(0,nrow=1,ncol=2), nlag=0)
   class(x) <- "stepfit"
   return(x)
 }
 
-## validator
+# validator
+#' @export
 is.stepfit <- function(x){
   if(length(names(x))){
     conds <- names(stepfit()) %in% names(x)# minimal requirement
@@ -45,10 +57,12 @@ is.stepfit <- function(x){
 }
 
 ## viewer
+#' @export
 print.stepfit <- function(x, ...){
   summary.stepfit(x, ...)
 }
 
+#' @export
 summary.stepfit <- function(object, ...){
   cat(" Parameters:\n")
   for(ind in 1:object$nlag){
@@ -60,6 +74,8 @@ summary.stepfit <- function(object, ...){
 }
 
 ## plotter
+#' @rdname stepfit
+#' @export
 plot.stepfit <- function(x, ...){
   old.par <- par(no.readonly=TRUE)
   on.exit(par(old.par))
@@ -82,7 +98,36 @@ plot.stepfit <- function(x, ...){
 
 ##################################################
 ## CLASS "BAYESFIT"
-## constructor
+#' Traces from the MCMC output
+#' 
+#' Test or show objects of class "bayesfit".
+#' 
+#' @details
+#' Default plot shows samples of residual densities (\code{which==1}), residual
+#' distribution with credible interval (\eqn{5\%} and \eqn{95\%} posterior
+#' quantile; \code{which==2}), and joint posterior distribution of \eqn{\alpha}
+#' and \eqn{\beta} (\code{which==3}) for each lag successively. \code{which}
+#' can be any composition of 1,2 and 3.
+#' 
+#' @param x an arbitrary \R object.
+#' @param which a vector with values in {1,2,3} where 1 is to plot residual
+#'   density functions, 2 is for residual distribution functions and 3 is for
+#'   a contour plot of the posterior distribution function of (alpha, beta).
+#' 
+#' @returns An object of class "bayesfit" with MCMC traces for:
+#'   \item{a, b }{Heffernan--Tawn model parameters (matrices).}
+#'   \item{sd, mean }{means and standard deviations of the residual mixture components (3-dimensional arrays).}
+#'   \item{w }{weights of the mixture components (matrix).}
+#'   \item{prec }{precision parameter of the Dirichlet process (vector).}
+#'   \item{ci }{auxiliary variable; components' indices for each observation (matrix).}
+#'   \item{noo }{number of observation in each mixture component (matrix).
+#'   \item{noc }{number of non-empty components in the mixture, i.e., for which at least one data points has a component index pointing to it.}
+#'   \item{prop.sd }{standard deviations for the proposal distributions of \code{a} and \code{b} (3-dimensional array).}
+#'   And \code{len}, the length of the traces, i.e., the number of iterations
+#'   saved after burning and thinning; \code{nlag} stores the number of lags
+#'   present in the data.
+#' @seealso [bayesparams()], [stepfit()]
+#' @export
 bayesfit <- function(){
   z.mat <- matrix(0, nrow=1, ncol=1)
   z.ar  <- array(0, dim=c(1,1,1))
@@ -94,6 +139,7 @@ bayesfit <- function(){
 }
 
 ## validator
+#' @export
 is.bayesfit <- function(x){
   if(length(names(x))){
     conds <- names(bayesfit()) %in% names(x)
@@ -112,10 +158,12 @@ is.bayesfit <- function(x){
 }
 
 ## viewer
+#' @export
 print.bayesfit <- function(x, ...){
   summary.bayesfit(x, ...)
 }
 
+#' @export
 summary.bayesfit <- function(object, ...){
   cat(" Posterior medians:\n")
   for(j in 1:object$nlag){
@@ -126,6 +174,8 @@ summary.bayesfit <- function(object, ...){
   }
 }
 
+#' @rdname bayesfit
+#' @export
 plot.bayesfit <- function(x, which=1:3, ...){
   old.par <- par(no.readonly=TRUE)
   on.exit(par(old.par))
@@ -150,7 +200,7 @@ plot.bayesfit <- function(x, which=1:3, ...){
       if("main" %in% names(def)) def$main <- "Sample of residual densities"
         grid <- seq(-100,100,2)
         de <- residual.densities(x,j,grid)
-        grid <- seq(min(de$x),max(de$x),length.out=151)
+        grid <- seq(min(de$x),max(de$x),length.out=501)
         de <- residual.densities(x,j,grid)
         xy <- list(x=de$x, y=de$y[,1])
         if(!("ylim" %in% names(list(...)))) xy$ylim <- c(0,max(de$y))
@@ -164,7 +214,7 @@ plot.bayesfit <- function(x, which=1:3, ...){
       if("main" %in% names(def)) def$main <- "Residual distribution"
       grid <- seq(-100,100,2)
       ds <- residual.distributions(x,j,grid)
-      grid <- seq(min(ds$x),max(ds$x),length.out=151)
+      grid <- seq(min(ds$x),max(ds$x),length.out=501)
       ds <- residual.distributions(x,j,grid)
       xy <- list(x=ds$x, y=ds$y[,1])
       do.call(plot, c(xy, type="l",def,list(...)))
@@ -182,7 +232,26 @@ plot.bayesfit <- function(x, which=1:3, ...){
   }
 }
 
+#' Compute the residual density/distribution function on a grid of x-values
+#' 
+#' Helper function for plotting the mixture density or distribution function
+#' of the residuals as expressed in the conditional tail model. Given a broad
+#' range of x-values, trims the left and right tails to cover the centre of the
+#' distribution.
+#' 
+#' @details
+#' Initially intended for internal use only, but exposed to the user as it may
+#' prove useful to adjust plots to different situations. Only minimal checks are
+#' performed on the inputs. You have been warned! 
+#' 
+#' @param x a bayesfit object
+#' @param lag the dimension of the residual density/distribution function to
+#'   consider; starts at 1
+#' @param grid vector of x-values to evaluate the function at
+#' @returns A list with two elements, x and y, where x is a subset of `grid`.
+#' @export
 residual.densities <- function(x, lag, grid){
+  stopifnot(is.bayesfit(x))
   nsamp<- min(25,x$len)# nbr of samples
   noc  <- dim(x$mean)[2]
   nobs <- sum(x$noo[1,])
@@ -209,6 +278,8 @@ residual.densities <- function(x, lag, grid){
   return(list(x=grid[lo:up], y=dens[lo:up,]))
 }
 
+#' @rdname residual.densities
+#' @export
 residual.distributions <- function(x, lag, grid){
   nsamp<- min(500,x$len)# nbr of samples
   noc  <- dim(x$mean)[2]
@@ -243,7 +314,54 @@ residual.distributions <- function(x, lag, grid){
 
 ##################################################
 ## CLASS "BAYESPARAMS"
-## constructor
+#' Parameters for the Bayesian semi-parametric approach
+#' 
+#' Create, test or show objects of class "bayesparams". Objects of this class
+#' are used as a meta-parameter for the methods fitting the Bayesian approach.
+#' 
+#' @details
+#' \code{prop.a} is a vector of length 5 with the standard deviations for each region of the RAMA for the (Gaussian) proposal for \eqn{\alpha}. If a scalar is given, 5 identical values are assumed.
+#' 
+#' \code{prop.b} is a vector of length 3 with the standard deviations for each
+#' region of the RAMA for the (Gaussian) proposal for \eqn{\beta}. If a scalar
+#' is provided, 3 identical values are assumed.
+#' 
+#' \code{comp.saved} has no impact on the calculations: its only purpose is to
+#' prevent from storing huge amounts of empty components.
+#' 
+#' The regional adaption scheme targets a \eqn{0.44} acceptance probability. It
+#' splits \eqn{[-1;1]} in \eqn{5} regions for \eqn{\alpha} and \eqn{[0;1]} in
+#' \eqn{3} regions for \eqn{\beta}. The decision to increase/decrease the
+#' proposal standard deviation is based on the past \code{batch.size} MCMC
+#' iterations, so too low values yield inefficient adaption, while too large
+#' values yield slow adaption.
+#' 
+#' Default values for the hyperparameters are chosen to get reasonably
+#' uninformative priors. 
+#' 
+#' @param x an arbitrary \R object.
+#' @returns An object of class "bayesparams" with the following elements:
+#'   \item{prop.a, prop.b }{standard deviation for the Gaussian proposal distributions of the Heffernan--Tawn model parameters; see also Details.}
+#'   \item{prior.mu }{mean and standard deviation parameters for the Gaussian prior distribution of the components' means.}
+#'   \item{prior.nu }{shape and rate parameters for the inverse gamma prior
+#'     distribution of the components' variances.}
+#'   \item{prior.eta }{shape and scale parameters for the gamma prior distribution
+#'     of the precision parameter used in the Dirichlet process.}
+#'   \item{trunc }{integer; truncation parameter for approximating the infinite sum in the stick-breaking process.}
+#'   \item{comp.saved }{number of components to be stored and returned.}
+#'   \item{maxit }{total number of iterations to perform (fewer are saved based on \code{burn} and \code{thin}).}
+#'   \item{burn }{number of first iterations to discard.}
+#'   \item{thin }{spacing between iterations to be saved. Defaults to 1, i.e., all iterations are saved.}
+#'   \item{adapt }{number of iterations during which an adaptive scheme (RAMA: Regional Adaptive Monte-Carlo Algorithm) is applied to the proposal variances of \eqn{\alpha} and \eqn{\beta}; 0 means no adaption.}
+#'   \item{batch.size }{size of batches used in the adaption algorithm. It has no effect if \code{adapt==0}.}
+#'   \item{start.ab }{either "guesstimate" to initialise start values for alpha and beta from a stepwise fit or "prior" to use random draws from their respective prior distributions.}
+#'   \item{mode }{verbosity; 0 for debug mode, 1 (default) for standard output, and 2 for silent.}
+#' @seealso [bayesfit()], [depmeasure()]
+#' @examples
+#' is.bayesparams(bayesparams()) # TRUE
+#' ## use defaults, change max number of iteration of MCMC
+#' par <- bayesparams(maxit=1e5)
+#' @export
 bayesparams <- function(prop.a=0.02, prop.b=0.02,
                         prior.mu=c(0,10), prior.nu=c(2,1/2), prior.eta=c(2,2),
                         trunc=100, comp.saved=15,
@@ -262,6 +380,7 @@ bayesparams <- function(prop.a=0.02, prop.b=0.02,
 }
 
 ## validator
+#' @export
 is.bayesparams <- function(x){
   if(length(names(x))){
     names.bp <- c("prop.a","prop.b","prior.mu","prior.nu","prior.eta",
@@ -288,27 +407,30 @@ is.bayesparams <- function(x){
 }
 
 ## viewer
+#' @export
 print.bayesparams <- function(x, ...){
   summary.bayesparams(x, ...)
 }
 
+#' @export
 summary.bayesparams <- function(object, ...){
   if(!is.bayesparams(object)){
     summary.default(object)
   }else{
-    cat("proposal for alpha            ",object$prop.a,"\n", sep="")
-    cat("proposal for beta             ",object$prop.b,"\n", sep="")
-    cat("prior par. for means          (",object$prior.mu[1],", ",object$prior.mu[2],")\n", sep="")
-    cat("prior par. for sd             (",object$prior.nu[1],", ",object$prior.nu[2],")\n", sep="")
-    cat("prior par. for precision par. (",object$prior.eta[1],", ",object$prior.eta[2],")\n", sep="")
-    cat("DP truncation                 ",object$trunc,"\n", sep="")
-    cat("nbr of components saved       ",object$comp.saved,"\n", sep="")
-    cat("max. nbr of MCMC iterations   ",object$maxit,"\n", sep="")
-    cat("length of burn-in             ",object$burn,"\n", sep="")
-    cat("thinning par.                 ",object$thin,"\n", sep="")
-    cat("length of adaption            ",object$adapt,"\n", sep="")
-    cat("size of adaption batches      ",object$batch.size,"\n", sep="")
-    cat("debug mode                    ",object$mode,"\n", sep="")
+    cat("proposal for alpha              ",object$prop.a,"\n", sep="")
+    cat("proposal for beta               ",object$prop.b,"\n", sep="")
+    cat("start values for alpha and beta ",ifelse(object$start.ab[1]=="prior", "drawn from prior", "guesstimated from 2-step fit"),"\n", sep="")
+    cat("prior par. for means            (",object$prior.mu[1],", ",object$prior.mu[2],")\n", sep="")
+    cat("prior par. for sd               (",object$prior.nu[1],", ",object$prior.nu[2],")\n", sep="")
+    cat("prior par. for precision par.   (",object$prior.eta[1],", ",object$prior.eta[2],")\n", sep="")
+    cat("DP truncation                   ",object$trunc,"\n", sep="")
+    cat("nbr of components saved         ",object$comp.saved,"\n", sep="")
+    cat("max. nbr of MCMC iterations     ",object$maxit,"\n", sep="")
+    cat("length of burn-in               ",object$burn,"\n", sep="")
+    cat("thinning par.                   ",object$thin,"\n", sep="")
+    cat("length of adaption              ",object$adapt,"\n", sep="")
+    cat("size of adaption batches        ",object$batch.size,"\n", sep="")
+    cat("debug mode                      ",object$mode,"\n", sep="")
   }
   invisible()
 }
@@ -316,7 +438,33 @@ summary.bayesparams <- function(object, ...){
 
 ##################################################
 ## CLASS "DEPMEASURE"
-## constructor
+#' Dependence measures estimates
+#' 
+#' Test or show objects of class "depmeasure", a structure for all dependence
+#' measures covered in this package.
+#' 
+#' @param type one of "theta", "chi", "steptheta" or "runs".
+#' @param x an arbitrary \R object.
+#' @returns An object of class "depmeasure" whose exact structure depends on
+#'   its type. All types contain the following elements,
+#'   \item{probs }{probability levels at which the dependence measure was estimated.}
+#'   \item{levels }{corresponding quantile levels on the data's original scale.}
+#'   \item{nlag }{number of lags.}
+#'   
+#'   Furthermore, if \code{type} is "theta" or "chi",
+#'   \item{fit }{an object of class "bayesfit".}
+#'   \item{distr }{a matrix with samples from the posterior distribution, with \code{length(levels)} rows and \code{S} columns (see [thetafit()]).}
+#'   \item{theta,chi }{a matrix with the posterior estimates of the respective dependence measure at different thresholds \code{levels} (rows) and coverage intervals (named columns, first two for the mean and median).}
+#'  
+#'  If \code{type} is "steptheta",
+#'  \item{fit }{an object of class "stepfit".}
+#'  \item{theta }{a matrix with the estimate for theta at different thresholds \code{levels} (rows) and confidence levels (columns).}
+#'    
+#'  If \code{type} is "runs",
+#'  \item{theta }{a matrix with the (empirical) runs estimator estimate and confidence intervals (columns) at the given \code{levels} (rows).}
+#'  \item{nbr.exc }{the number of exceedances corresponding to the \code{levels}.}
+#' @seealso [depmeasures()]
+#' @export
 depmeasure <- function(type=c("theta","chi","steptheta","runs")){
   z.mat <- matrix(0, nrow=1, ncol=1)
   x <- list(probs=0, levels=0, nlag=1)
@@ -341,6 +489,7 @@ depmeasure <- function(type=c("theta","chi","steptheta","runs")){
 }
 
 ## validator
+#' @export
 is.depmeasure <- function(x){
   if(length(names(x))){
     conds <- names(depmeasure("theta")) %in% names(x)
@@ -368,10 +517,12 @@ is.depmeasure <- function(x){
 }
 
 ## viewer
+#' @export
 print.depmeasure <- function(x, ...){
   summary.depmeasure(x, ...)
 }
 
+#' @export
 summary.depmeasure <- function(object, ...){
   cat("Bayes fit\n")
   summary(object$fit)
@@ -381,6 +532,8 @@ summary.depmeasure <- function(object, ...){
 }
 
 ## plotter
+#' @rdname depmeasure
+#' @export
 plot.depmeasure <- function(x, ...){
   stopifnot(is.depmeasure(x))
   if("nbr.exc" %in% names(x)){
@@ -441,6 +594,10 @@ plot.depmeasure <- function(x, ...){
 
 ##################################################
 ## ADDITIONAL VALIDATORS
+#' A loose integer validation function
+#' 
+#' @param x an arbitrary \R object.
+#' @keywords internal
 is.int <- function(x){
   if(all(x%/%1==x)) return(TRUE)
   else return(FALSE)

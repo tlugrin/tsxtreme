@@ -8,15 +8,19 @@
 ##################################################
 
 ##################################################
-## Bounds on (alpha,beta)
-
-## >   a: scalar, alpha parameter, in [-1,1]
-## >   b: scalar, beta parameter, in [0,1]
-## >   p: scalar, probability (to compute quantiles of residual distribution), in [0,1]
-## >   v: scalar, threshold, recommended as beyond the maximum observation
-## >   data: bivariate vector, (X,Y) with Y | X>u
-## <   boolean, does the couple (a,b) satisfy the conditions?
-## .   called by user to get the bounds on the posterior samples of (a,b) and by [conditions.bounds()]
+#' Bounds on (alpha,beta)
+#' 
+#' Mainly called by [conditions.bounds()] to check whether a given (alpha, beta)
+#' pair lies within the Keef et al. boundaries.
+#' 
+#' @param a scalar, alpha parameter, in [-1,1]
+#' @param b scalar, beta parameter, in [0,1]
+#' @param p scalar, probability (to compute quantiles of residual distribution), in [0,1]
+#' @param v scalar, threshold, recommended as beyond the maximum observation
+#' @param data bivariate vector, (X,Y) with Y | X>u
+#' @param boolean, does the couple (a,b) satisfy the conditions?
+#' @returns A boolean, TRUE if the (alpha, beta) pair is valid, FALSE otherwise.
+#' @keywords internal
 conditions.verify <- function(a, b, p, v=-log(2*(1-0.99999999)), data){
   z.q.pos <- q.res2(p, 1, 0, data)
   z.q     <- q.res2(p, a, b, data)
@@ -45,12 +49,29 @@ conditions.verify <- function(a, b, p, v=-log(2*(1-0.99999999)), data){
   }
 }
 
-## >   fix.par: scalar, either value of alpha or of beta
-## >   fix.alpha: boolean, TRUE if fix.par is for alpha, FALSE if fix.par is for beta
-## >   data: bivariate vector, (X,Y) with Y | X>u
-## >   eps: scalar, tolerance, typically 0.001
-## <   vector of length 2, with the bounds found
-## .   called by user to get the bounds and thus compute the normalising constant for truncated normal proposal
+#' Compute bounds for alpha or beta
+#'
+#' Called by [ht2fit()] to get the support of the (alpha, beta) pair during
+#' initialisation. Exposed to the user for their own curiosity, at their own
+#' risk!
+#' 
+#' The function computes bounds either for \eqn{\alpha} and requires a (fixed)
+#' value for \eqn{\beta}, or the other way around.
+#' A twin C routine supports the MCMC algorithm when computing
+#' the normalising constants for the truncated normal proposals of \eqn{\alpha}
+#' and \eqn{\beta}.
+#'
+#' @param fix.par scalar, either the value of \eqn{\alpha} or that of \eqn{\beta}.
+#' @param fix.alpha boolean, `TRUE` if [fix.par] is for \eqn{\alpha}, `FALSE`
+#'   if [fix.par] is for \eqn{\beta}.
+#' @param data 2-column matrix representing the bivariate vector
+#'   \eqn{(X,Y)} with \eqn{Y | X>u}.
+#' @param eps tolerance parameter for finding the boundary value,
+#'   defaults to 0.001.
+#' @param v value of a very high quantile on the Laplace scale.
+#' @returns A numeric vector of length 2 with the lower and upper bounds for the
+#'   given parameter (either alpha or beta).
+#' @export 
 conditions.bounds <- function(fix.par, fix.alpha=TRUE, data, eps=0.001, v=-log(2*(1-0.99999999))){
   i <- o <- 2
   bounds <- numeric(2)
@@ -109,13 +130,18 @@ conditions.bounds <- function(fix.par, fix.alpha=TRUE, data, eps=0.001, v=-log(2
   return(bounds)
 }
 
-## >   i: current inner bound
-## >   o: current outer bound
-## >   fix.par: scalar, either value of alpha or of beta
-## >   data: bivariate vector, (X,Y) with Y | X>u
-## >   eps: scalar, tolerance, typically 0.001
-## <   scalar, the bound found
-## .   pair of functions called by conditions.bounds to get more accurate bounds by dichotomy
+#' Determine exact bound for alpha or beta
+#' 
+#' Pair of functions called by [conditions.bounds()] to get more accurate
+#' bounds by dichotomy.
+#' 
+#' @param i current inner bound
+#' @param o current outer bound
+#' @param fix.par scalar, either value of alpha or of beta
+#' @param data bivariate vector, (X,Y) with Y | X>u
+#' @param eps scalar, tolerance, typically 0.001
+#' @returns Scalar, the bound found.
+#' @keywords internal
 dicho.b.bounds <- function(i, o, fix.par, data, eps, v=-log(2*(1-0.99999999))){
   mid <- mean(c(i,o))
   if(conditions.verify(fix.par, mid, 1, v, data) &&
@@ -125,6 +151,8 @@ dicho.b.bounds <- function(i, o, fix.par, data, eps, v=-log(2*(1-0.99999999))){
   else{ return(dicho.b.bounds(i, o, fix.par, data, eps, v)) }
 }
 
+#' @rdname dicho.b.bounds
+#' @keywords internal
 dicho.a.bounds <- function(i, o, fix.par, data, eps, v=-log(2*(1-0.99999999))){
   mid <- mean(c(i,o))
   

@@ -5,6 +5,7 @@ Version: 0.4.0
 Date: 2025-XX-YY
 Authors@R: person("Thomas", "Lugrin", role = c("aut", "cre", "cph"), email = "thomas.lugrin@alumni.epfl.ch")
 Imports: evd, mvtnorm, stats, MASS, graphics, tictoc
+Roxygen: list(markdown = TRUE)
 Description: Characterisation of the extremal dependence structure of time series, avoiding pre-processing and filtering as done typically with peaks-over-threshold methods. It uses the conditional approach of Heffernan and Tawn (2004) <DOI:10.1111/j.1467-9868.2004.02050.x> which is very flexible in terms of extremal and asymptotic dependence structures, and Bayesian methods improve efficiency and allow for deriving measures of uncertainty. For example, the package contains a routine to estimate the extremal index, a measure related to the size of clusters of extreme values in time, and this same routine also gives access to the raw samples from the extremal index posterior distribution.
 License: GPL (>=2)
 NeedsCompilation: yes

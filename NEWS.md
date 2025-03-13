@@ -2,7 +2,7 @@
 
 * add option to set starting values for alpha and beta
 * fix bug in the computation of the Monte-Carlo integration
-* TOOD: migrate documenation to roxygen
+* TOOD: migrate documentation to roxygen
 * TODO: update documentation throughout package
 * TODO: update code to conform to modern R conventions
 

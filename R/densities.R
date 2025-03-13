@@ -9,6 +9,63 @@
 
 ##################################################
 ## LAPLACE DISTRIBUTION
+#' The Laplace distribution
+#' 
+#' Density, distribution function, qunatile function and random generation for
+#' the Laplace distribution.
+#' 
+#' @details
+#' If `loc` or `scale` are not specified, they assume the default
+#' values of 0 and 1 respectively.
+#' 
+#' The Laplace distribution has density
+#' \deqn{f(x) = \exp(- |x-\mu|/\sigma)/(2\sigma)}
+#' where \eqn{\mu} is the location parameter and \eqn{\sigma} is the scale
+#' parameter.
+#' 
+#' @section Warning: 
+#' Some checks are done previous to standard evaluation, but vector computations
+#' have not yet been tested thoroughly! Typically vectors not having lengths
+#' multiple of each other return an error.
+#' 
+#' @param x,q vector of quantiles.
+#' @param p vector of probabilities.
+#' @param n number of samples.
+#' @param loc vector of location parameters.
+#' @param scale vector of scale parameters; must be non-negative.
+#' @param log,log.p logical; if TRUE, probabilities `p` are given as `log(p)`;
+#'   defaults to FALSE.
+#' @param lower.tail logical; if TRUE (default), probabilities are
+#'   \eqn{P(X\le x)}, otherwise \eqn{P(X>x)}.
+#' @returns `dlapl` gives the density, `plapl` gives the distribution function,
+#'   `qlapl` gives the quantile function, and `rlapl` generates random deviates.
+#'   
+#'   The length of the result is determined by `n` in `rlapl`, and is the
+#'   maximum of the lengths of the numerical arguments for the other functions.
+#'   Standard `R` vector operations are to be assumed.
+#'   
+#'   If `sd==0`, the limit as `sd` decreases to 0 is returned, i.e., a point
+#'   mass at `loc`. The case `sd<0` is an error and nothing is returned.
+#' @seealso [stats::dexp()] for the exponential distribution which is the
+#'   positive part of the Laplace distribution.
+#' @examples
+#' ## evaluate the density function on a grid of values
+#' x  <- seq(from=-5, to=5, by=0.1)
+#' fx <- dlapl(x, loc=1, scale=.5)
+#'
+#' ## generate random samples of a mixture of Laplace distributions
+#' rnd <- rlapl(1000, loc=c(-5,-3,2), scale=0.5)
+#' 
+#' ## an alternative:
+#' rnd <- runif(1000)
+#' rnd <- qlapl(rnd, loc=c(-5,-3,2), scale=0.5)
+#' 
+#' ## integrate the Laplace density on [a,b]
+#' a <- -1
+#' b <- 7
+#' integral <- plapl(b)-plapl(a)
+#' 
+#' @export
 dlapl <- function(x, loc=0, scale=1, log=FALSE){
   if(any(scale < 0)) stop("scale parameter must be non-negative")
   
@@ -23,6 +80,8 @@ dlapl <- function(x, loc=0, scale=1, log=FALSE){
   }
 }
 
+#' @rdname dlapl
+#' @export
 plapl <- function(q, loc=0, scale=1, lower.tail=TRUE, log.p=FALSE){
   if(any(scale < 0)) stop("scale parameter must be non-negative")
   ret <- sign(q-loc)*(1-exp(-abs(q-loc)/scale))/2
@@ -40,6 +99,8 @@ plapl <- function(q, loc=0, scale=1, lower.tail=TRUE, log.p=FALSE){
   }
 }
 
+#' @rdname dlapl
+#' @export
 qlapl <- function(p, loc=0, scale=1, lower.tail=TRUE, log.p=FALSE){
   if(any(p < 0) || any(p > 1)) stop("p must lie between 0 and 1")
   if(any(scale < 0)) stop("scale must be non-negative")
@@ -55,6 +116,8 @@ qlapl <- function(p, loc=0, scale=1, lower.tail=TRUE, log.p=FALSE){
   return(ret)
 }
 
+#' @rdname dlapl
+#' @export
 rlapl <- function(n, loc=0, scale=1){
   if(any(scale < 0)) stop("scale must be non-negative")
   u <- runif(n)

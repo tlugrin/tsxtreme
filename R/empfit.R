@@ -7,17 +7,76 @@
 ##################################################
 
 ##################################################
-## RUNS ESTIMATOR
-
-## >   ts: vector of reals, time series which to estimate theta(x,m) for
-## >   nlag: integer, nbr of lags (run-length - 1)
-## >   u.mar: probability, threshold used for marginal transform
-## >   probs: vector of probabilities, x in theta(x,m)
-## >   block.length: integer>0, used for the block-bootstrap CI
-## >   R.boot: integer>0, nbr of repetitions used for the block-bootstrap CI - 0 means CI not computed
-## >   levels: vector of probabilities, specifies which posterior quantiles to compute (+estimate)
-## <   ret: list, theta with CI - nbr of exc. across [mesh] - [mesh] in Laplace/original scale
-## .   called by user
+#' Runs estimator
+#' 
+#' Compute the empirical estimator of the extremal index using the runs method
+#' (Smith & Weissman, 1994, JRSSB).
+#' 
+#' @details
+#' Consider a stationary time series \eqn{(X_t)}. A characterisation of the
+#' extremal index is
+#' \deqn{\theta(x,m) = Pr(X_1\le x,\ldots,X_m\le x \mid X_0\ge x).}{\theta(x,m) = Pr(X_1\le x,\dots,X_m\le x | X_0\ge x).}
+#' In the limit when \eqn{x} and \eqn{m} tend to \eqn{\infty} appropriately,
+#' \eqn{\theta} corresponds to the asymptotic inverse mean cluster size. It also
+#' links the generalised extreme value distribution of the independent series
+#' \eqn{(Y_t)}, with the same marginal distribution as \eqn{(X_t)},
+#' \deqn{G_Y(z)=G_X^\theta(z),}
+#' with \eqn{G_X} and \eqn{G_Y} the extreme value distributions of \eqn{(X_t)}
+#' and \eqn{(Y_t)} respectively.
+#' 
+#' `nlag` corresponds to the _run-length_ \eqn{m} and `probs` is a set of values
+#' for \eqn{x}.
+#' The _runs_ estimator is computed, which consists of counting the proportion
+#' of clusters to the number of exceedances of a threshold \eqn{x}; two
+#' exceedances of the threshold belong to different clusters if there are at
+#' least \eqn{m+1} non-exceedances inbetween.
+#' 
+#' @param ts a vector, the time series for which to estimate the threshold-based
+#'   extremal index \eqn{\theta(x,m)}, with \eqn{x} a probability level and
+#'   \eqn{m} a run-length (see details).
+#' @param lapl logical; is `ts` on the Laplace scale already? The default
+#'   (FALSE) assumes unknown marginal distribution.
+#' @param nlag the run-length; an integer larger or equal to 1.
+#' @param u.mar marginal threshold (probability); used when transforming the
+#'   time series to Laplace scale if `lapl` is `FALSE`; if `lapl` is `TRUE`,
+#'   it is nevertheless used when bootstrapping, since the bootstrapped series
+#'   generally do not have Laplace marginal distributions.
+#' @param probs vector of probabilities; the values of `x` for which to evaluate
+#'   \eqn{\theta(x,m)}.
+#' @param method.mar a character string defining the method used to estimate the
+#'   marginal GPD; either `"mle"` for maximum likelihood or `"mom"` for method
+#'   of moments or `"pwm"` for probability weighted moments methods. Defaults to
+#'   `"mle"`.
+#' @param block.length integer; the block length used for the block-bootstrapped
+#'   confidence intervals.
+#' @param R.boot integer; the number of samples used for the block bootstrap.
+#' @param levels vector of probabilites; the quantiles of the posterior
+#'   distribution of the extremal index \eqn{\theta(x,m)} to output.
+#' @returns An object of class [depmeasure()] containing:
+#'   \item{theta }{matrix; estimates of the extremal index \eqn{\theta(x,m)} with rows corresponding to the \code{probs} values of \eqn{x} and the columns to the runs estimate and the chosen \code{levels}-quantiles of the bootstrap distribution.}
+#'   \item{nbr.exc }{numeric vector; number of exceedances for each threshold corresponding to the elements in \code{probs}.}
+#'   \item{probs }{\code{probs}.}
+#'   \item{levels }{numeric vector; \code{probs} converted to the original scale of \code{ts}.}
+#'   \item{nlag }{\code{nlag}.}
+#' @seealso [theta2fit()], [thetafit()]
+#' @examples
+#' ## generate data from an AR(1)
+#' ## with Gaussian marginal distribution
+#' n   <- 10000
+#' dep <- 0.5
+#' ar    <- numeric(n)
+#' ar[1] <- rnorm(1)
+#' for(i in 2:n)
+#'   ar[i] <- rnorm(1, mean=dep*ar[i-1], sd=1-dep^2)
+#' ## transform to Laplace scale
+#' ar <- qlapl(pnorm(ar))
+#' ## compute empirical estimate
+#' theta <- thetaruns(ts=ar, u.mar=.95, probs=c(.95,.98,.99))
+#' ## output
+#' plot(theta, ylim=c(.2,1))
+#' abline(h=1, lty="dotted")
+#' @export
+#' @aliases empfit
 thetaruns <- function(ts, lapl=FALSE, nlag=1, u.mar=0,
                       probs=seq(u.mar,0.995,length.out=30),
                       method.mar=c("mle","mom","pwm"),
@@ -61,11 +120,15 @@ thetaruns <- function(ts, lapl=FALSE, nlag=1, u.mar=0,
 }
 
 
-
-## >   data: matrix, lags matrix of a time series
-## >   mesh: vector, x in theta(x,m) on Laplace scale
-## <   ret: list, estimates of theta across [mesh] - nbr of exceedances across [mesh]
-## .   called by thetaruns
+#' Compute the extremal index using the runs method
+#' 
+#' Called by [thetaruns()].
+#' 
+#' @param data matrix, lags matrix of a time series
+#' @param mesh vector, x in theta(x,m) on Laplace scale
+#' @returns list, estimates of theta across [mesh] - nbr of exceedances
+#' across [mesh]
+#' @keywords internal
 compute.runs <- function(data, mesh){
   nbr.vert <- length(mesh)
   theta <- nbr.exc <- numeric(nbr.vert)
@@ -77,12 +140,15 @@ compute.runs <- function(data, mesh){
   return(list(theta,nbr.exc))
 }
 
-
-## >   ts: vector of reals, time series which to estimate theta(x,m) for
-## >   block.length: integer>0, used for the block-bootstrap CI
-## >   R: integer>0, nbr of repetitions used for the block-bootstrap CI
-## <   matrix, each column is a block-bootstrapped time series
-## .   called by thetaruns()
+#' Compute a block bootstrap sample from a time series
+#' 
+#' Called by [thetaruns()].
+#' 
+#' @param ts vector of reals, time series which to estimate theta(x,m) for
+#' @param block.length: integer>0, used for the block-bootstrap CI
+#' @param R integer>0, nbr of repetitions used for the block-bootstrap CI
+#' @returns matrix, each column is a block-bootstrapped time series
+#' @keywords internal
 block.bootstrap.sample <- function(ts, block.length, R){
   ## handle cases when block length does not divide the time series
   rest <- length(ts)%%block.length

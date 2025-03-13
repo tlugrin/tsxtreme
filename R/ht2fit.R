@@ -8,12 +8,68 @@
 ##                    - ht2step
 ##################################################
 
-## >   ts: vector of reals, time series
-## >   u.mar,u.dep: scalars, marginal/dependence thresholds given as a probabilities
-## >   nlag: integer, number of lags to consider
-## >   conditions: logical, TRUE means alpha and beta must satisfy AD/AI constraints
-## <   ret: list, MLE for alpha - beta - z hat - standard deviations of alpha and beta
-## .   called by user
+#' Dependence model fit (stepwise)
+#' 
+#' The conditional Heffernan--Tawn model is used to fit the dependence in time
+#' of a stationary series. A standard 2-stage procedure is used.
+#' 
+#' @details
+#' Consider a stationary time series \eqn{(X_t)} with Laplace marginal
+#' distribution; the fitting procedure consists of fitting
+#' \deqn{X_t = \alpha_t\times x_0 + x_0^{\beta_t}\times Z_t,\quad t=1,\ldots,m,}{X_t = \alpha_t * x_0 + x_0^{\beta_t} * Z_t, t=1,\ldots,m,}
+#' with \eqn{m} the number of lags considered. A likelihood is maximised
+#' assuming \eqn{Z_t\sim N(\mu_t, \sigma^2_t)}{Z_t ~ N(\mu_t, \sigma^2_t)},
+#' then an empirical distribution for the \eqn{Z_t} is derived using the
+#' estimates of \eqn{\alpha_t} and \eqn{\beta_t} and the relation
+#' \deqn{\hat Z_t = \frac{X_t - \hat\alpha_t\times x_0}{x_0^{\hat\beta_t}}.}{Z_t = (X_t - \alpha_t * x_0) / x_0^{\beta_t}.}
+#' 
+#' [conditions] implements additional conditions suggested by
+#' Keef, Papastathopoulos and Tawn (2013) on the ordering of conditional
+#' quantiles. These conditions help with getting a consistent fit by shrinking
+#' the domain in which \eqn{(\alpha,\beta)} live.
+#' 
+#' @param ts numeric vector; time series to be fitted.
+#' @param u.mar marginal threshold; used when transforming the time series to
+#'   Laplace scale.
+#' @param u.dep dependence threshold; level above which the dependence is
+#'   modelled. \code{u.dep} can be lower than \code{u.mar}.
+#' @param lapl logical; is \code{ts} on the Laplace scale already? The default
+#'   (FALSE) assumes unknown marginal distribution.
+#' @param method.mar a character string defining the method used to estimate the
+#'   marginal GPD; either \code{"mle"} for maximum likelihood of \code{"mom"}
+#'   for method of moments. Defaults to \code{"mle"}.
+#' @param nlag integer; number of lags to be considered when modelling the
+#'   dependence in time.
+#' @param conditions logical; should conditions on \eqn{\alpha} and \eqn{\beta}
+#'   be set? (see Details) Defaults to \code{TRUE}.
+#' @returns An object of class [stepfit()].
+#' @seealso [depfit()], [theta2fit()]
+#' @examples
+#' ## generate data from an AR(1)
+#' ## with Gaussian marginal distribution
+#' n   <- 10000
+#' dep <- 0.5
+#' ar    <- numeric(n)
+#' ar[1] <- rnorm(1)
+#' for(i in 2:n)
+#'   ar[i] <- rnorm(1, mean=dep*ar[i-1], sd=1-dep^2)
+#' plot(ar, type="l")
+#' plot(density(ar))
+#' grid <- seq(-3,3,0.01)
+#' lines(grid, dnorm(grid), col="blue")
+#' 
+#' ## rescale margin
+#' ar <- qlapl(pnorm(ar))
+#' 
+#' ## fit model without constraints...
+#' fit1 <- dep2fit(ts=ar, u.mar = 0.95, u.dep=0.98, conditions=FALSE)
+#' fit1$a; fit1$b
+#' 
+#' ## ...and compare with a fit with constraints
+#' fit2 <- dep2fit(ts=ar, u.mar = 0.95, u.dep=0.98, conditions=TRUE)
+#' fit2$a; fit2$b# should be similar, as true parameters lie well within the constraints
+#' 
+#' @export
 dep2fit <- function(ts, u.mar=0, u.dep, lapl=FALSE, method.mar=c("mle","mom","pwm"), nlag=1, conditions=TRUE){
   data.up <- format.ts(ts=ts, u.mar=u.mar, u.dep=u.dep, method=method.mar,
                        lapl=lapl, nlag=nlag)
@@ -23,13 +79,15 @@ dep2fit <- function(ts, u.mar=0, u.dep, lapl=FALSE, method.mar=c("mle","mom","pw
 ##################################################
 ## LIKELIHOODS
 
-## >   par: vector of reals, alpha-beta-mu-sigma^2
-## >   data: 2-column matrix, first column is X>u - second column is Y|X>u
-## >   conditions: boolean, TRUE means alpha and beta must satisfy AD/AI constraints
-## <   ret: scalar, value of the negative log-likelihood of H+T
-## .   called by ht2step.2d
-## ... find estimates of Heffernan-Tawn's alpha and beta
-
+#' Negative log-likelihood for the Heffernan--Tawn model
+#' 
+#' Called by [ht2step.2d()]
+#' 
+#' @param par vector of reals, alpha-beta-mu-sigma^2
+#' @param data 2-column matrix, first column is X>u - second column is Y|X>u
+#' @param conditions boolean, TRUE means alpha and beta must satisfy AD/AI constraints
+#' @returns scalar, value of the negative log-likelihood of H+T
+#' @keywords internal
 nllh.ht <- function(par,data,conditions){
   if(par[4] <= 0){ return(Inf) }
   if(conditions){
@@ -44,7 +102,8 @@ nllh.ht <- function(par,data,conditions){
 }
 
 
-## cf. above - > conditions not used
+#' @rdname nllh.ht
+#' @keywords internal
 grad.ht <- function(par,data,conditions){
   sig <- par[4]*data[,1]^(2*par[2])
   mu  <- par[1]*data[,1] + par[3]*data[,1]^par[2]
@@ -62,10 +121,15 @@ grad.ht <- function(par,data,conditions){
 ##################################################
 ## FITS
 
-## >   data: 2-column matrix, first column is X>u (Laplace) - second column is Y|X>u
-## >   conditions: boolean, TRUE means alpha and beta must satisfy AD/AI constraints
-## <   ret: list, MLE for alpha - beta - z hat - standard deviations of alpha and beta
-## .   called by ht2step or user
+#' Heffernan--Tawn model stepwise fit in two dimensions
+#'
+#' Called by [ht2step()]
+#' 
+#' @param data 2-column matrix, first column is \eqn{X>u} (Laplace) - second
+#'   column is \eqn{Y|X>u}
+#' @param conditions boolean, TRUE means alpha and beta must satisfy AD/AI constraints
+#' @returns list, MLE for alpha - beta - z hat - standard deviations of alpha and beta
+#' @keywords internal
 ht2step.2d <- function(data, conditions=TRUE){
   ret <- stepfit()
   if(conditions){
@@ -87,11 +151,14 @@ ht2step.2d <- function(data, conditions=TRUE){
 }
 
 
-
-## >   data: matrix of reals, first column is X>u (Laplace) - other columns are |X>u
-## >   conditions: boolean, TRUE means alpha and beta must satisfy AD/AI constraints
-## <   ret: list, MLE for alpha - beta - z hat - standard deviations of alpha and beta
-## .   called by th2fit
+#' Heffernan--Tawn model stepwise fit in the general case
+#' 
+#' Called by [th2fit()]
+#' 
+#' @param data matrix of reals, first column is X>u (Laplace) - other columns are |X>u
+#' @param conditions boolean, TRUE means alpha and beta must satisfy AD/AI constraints
+#' @returns list, MLE for alpha - beta - z hat - standard deviations of alpha and beta
+#' @keywords internal
 ht2step <- function(data, conditions=TRUE){
   n       <- dim(data)[1]
   d       <- dim(data)[2]
