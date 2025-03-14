@@ -11,15 +11,20 @@
 
 ##################################################
 ## FORMAT TIME SERIES FOR H+T MODEL
-
-## >   ts: vector of reals, (stationary!) time series
-## >   u.mar: scalar, marginal (GPD) threshold given as a probability
-## >   u.dep: scalar, conditional threshold given as a probability
-## >   method: string, "mle" for max likelihood or "mom" for the method of moments or "pwm" for proba weighted moments
-## >   nlag: integer, number of lags to be considered
-## >   lapl: logical, is [ts] on Laplace scale already?
-## <   ret: matrix with [nlag]+1 columns on the Laplace scale, with 1st column above threshold
-## .   called by [etfit()], [et2fit()]
+#' Pre-process time series to feed Heffernan--Tawn model
+#' 
+#' Called by [etfit()] and [et2fit()], not exposed to the user.
+#' 
+#' @param ts vector of reals, (stationary!) time series on an arbitrary scale.
+#' @param u.mar scalar, marginal (GPD) threshold given as a probability.
+#' @param u.dep scalar, conditional threshold given as a probability.
+#' @param method string, "mle" for max likelihood or "mom" for the method of
+#'   moments or "pwm" for proba weighted moments
+#' @param nlag integer, number of lags to be considered.
+#' @param lapl logical, is [ts] on Laplace scale already?
+#' @returns A matrix with [nlag]+1 columns on the Laplace scale, with first
+#'   column above threshold.
+#' @keywords internal
 format.ts <- function(ts, u.mar, u.dep, method=c("mle","mom","pwm"), nlag, lapl=FALSE){
   if(!lapl)
     ts <- scale.ts(ts=ts, u=u.mar, method=method)$ts.L
@@ -31,13 +36,17 @@ format.ts <- function(ts, u.mar, u.dep, method=c("mle","mom","pwm"), nlag, lapl=
 
 ##################################################
 ## MARGINAL TRANSFORMATIONS
-
-## >   ts: vector of reals, (stationary!) time series
-## >   u: scalar, threshold given as a probability
-## >   method: string, "mle" for max likelihood or "mom" for the method of moments or "pwm" for proba weighted moments
-## <   ret: list, original time series with different marginal distributions + GPD parameters
-## .   called by [format.ts()]
-
+#' Marginal transformation to Laplace scale
+#' 
+#' Called by [format.ts()], not exposed to the user.
+#' 
+#' @param ts vector of reals, (stationary!) time series.
+#' @param u scalar, threshold given as a probability.
+#' @param method string, "mle" for max likelihood or "mom" for the method of
+#'   moments or "pwm" for proba weighted moments.
+#' @returns A list, original time series with different marginal distributions +
+#'   GPD parameters.
+#' @keywords internal
 scale.ts <- function(ts, u, method=c("mle","mom","pwm")){
   u    <- quantile(ts, u)
   n    <- length(ts)
@@ -59,13 +68,18 @@ scale.ts <- function(ts, u, method=c("mle","mom","pwm")){
 }
 
 
-
-## >   x: (vector of) reals, (a range of) observations for which change of scale is needed
-## >   ts: vector of reals, time series in original scale
-## >   u: scalar, threshold given as a probability
-## >   gpd.pars: vector of 3 reals, scale-shape-probability of exceeding u
-## <   ret: list, original observation(s) scaled to different marginal distributions
-## .   called by ?
+#' Use fitted transform to scale data to different scales
+#' 
+#' Currently not used, not exposed to the user.
+#' 
+#' @param x (vector of) reals, (a range of) observations for which change of
+#'   scale is needed.
+#' @param ts vector of reals, time series in original scale.
+#' @param u scalar, threshold given as a probability.
+#' @param gpd.pars vector of 3 reals, scale-shape-probability of exceeding u.
+#' @returns A list, original observation(s) scaled to different marginal
+#'   distributions: Uniform, Gumbel, Fréchet and Laplace.
+#' @keywords internal
 scale.to.margin <- function(x, ts, u, gpd.pars){
   u   <- quantile(ts,u)
   n   <- length(ts)
@@ -83,13 +97,18 @@ scale.to.margin <- function(x, ts, u, gpd.pars){
 }
 
 
-
-## >   p: (vector of) reals, (a range of) probabilities which to transform to original [ts] scale
-## >   ts: vector of reals, time series in original scale
-## >   u: scalar, threshold given as a probability
-## >   gpd.pars: vector of 2 reals, scale-shape parameters of the GPD fitted to [ts]
-## <   a vector of the same length as [p] in [ts] scale
-## .   called by thetafit, chifit, theta2fit
+#' Use fitted transform to scale probabilities back to the original scale
+#' 
+#' Called by [thetafit()], [chifit()], [theta2fit()]
+#' 
+#' @param p (vector of) reals, (a range of) probabilities which to transform to
+#'   original [ts] scale.
+#' @param ts vector of reals, time series in original scale.
+#' @param u scalar, threshold given as a probability.
+#' @param gpd.pars vector of 2 reals, scale-shape parameters of the GPD fitted
+#'   to [ts].
+#' @returns A vector of the same length as [p] on [ts] scale.
+#' @keywords internal
 scale.to.original <- function(p, ts, u, gpd.pars){
   u.O <- quantile(ts, u)
   exc <- p > u
@@ -103,11 +122,17 @@ scale.to.original <- function(p, ts, u, gpd.pars){
 ##################################################
 ## PRE-PROCESSING FOR HT & ET
 
-## >   data: matrix of reals, replicates in rows - variables in columns
-## >   u: scalar, threshold given as a probability or quantile (cf. quantile)
-## >   quantile: boolean, TRUE means u is given as a quantile - FALSE means as a probability
-## <   ret: matrix of reals, only first column observations exceeding u are kept
-## .   called by format.ts
+#' Pre-process matrix of lagged data for Heffernan--Tawn fit
+#' 
+#' Called by [format.ts()], not exposed to the user.
+#' 
+#' @param data matrix of reals, replicates in rows - variables in columns.
+#' @param u scalar, threshold given as a probability or quantile (cf. quantile).
+#' @param quantile boolean, `TRUE` means `u` is given as a quantile --- `FALSE`
+#'   means as a probability.
+#' @returns A matrix of reals, only rows for which the first column of
+#'  observations exceed `u` are kept.
+#' @keywords internal
 threshold.margin <- function(data, u=0.95, quantile=FALSE)
 {
   if(!quantile) u <- quantile(data[,1], u)
@@ -116,11 +141,15 @@ threshold.margin <- function(data, u=0.95, quantile=FALSE)
 }
 
 
-
-## >   ts: vector of reals, (stationary!) time series
-## >   nlag: scalar, number of lags of the output lagged matrix (=> nbr of columns == nlag+1)
-## <   ret: matrix of lagged versions of ts in its columns
-## .   called by format.ts and thetaruns
+#' Build matrix of lagged observations
+#' 
+#' Called by [format.ts()] and [thetaruns()], not exposed to the user.
+#' 
+#' @param ts vector of reals, (stationary!) time series.
+#' @param nlag scalar, number of lags of the output lagged matrix
+#'   (=> number of columns == `nlag`+1).
+#' @returns A matrix of lagged versions of `ts` in its columns.
+#' @keywords internal
 lags.matrix <- function(ts, nlag){
   n      <- length(ts)
   dim    <- nlag+1

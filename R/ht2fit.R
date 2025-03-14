@@ -157,7 +157,7 @@ ht2step.2d <- function(data, conditions=TRUE){
 #' 
 #' @param data matrix of reals, first column is X>u (Laplace) - other columns are |X>u
 #' @param conditions boolean, TRUE means alpha and beta must satisfy AD/AI constraints
-#' @returns list, MLE for alpha - beta - z hat - standard deviations of alpha and beta
+#' @returns An object of class [stepfit()].
 #' @keywords internal
 ht2step <- function(data, conditions=TRUE){
   n       <- dim(data)[1]

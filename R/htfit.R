@@ -7,7 +7,63 @@
 
 ##################################################
 ## H+T R interface
-
+#' Conditional tail model Bayesian fit
+#' 
+#' Bayesian semiparametrics are used to fit the Eastoe--Tawn model to a time
+#' series. Options are available to impose a structure in time on the model.
+#' 
+#' @details
+#' \code{submodel} can be \code{"fom"} to impose a first order Markov structure
+#' on the model parameters \eqn{\alpha_j} and \eqn{\beta_j}
+#' (see [thetafit()] for more details); it can take the value \code{"none"} to
+#' impose no particular structure in time; it can also be \code{"ugm"} which
+#' can be applied to density estimation, as it corresponds to setting
+#' \eqn{\alpha=\beta=0} (see examples).#' 
+#' 
+#' @param ts numeric vector; time series to be fitted.
+#' @param u.mar marginal threshold; used when transforming the time series to
+#'   the Laplace scale.
+#' @param u.dep dependence threshold; level above which the dependence is
+#'   modelled. \code{u.dep} can be lower than \code{u.mar}.
+#' @param lapl logical; is \code{ts} on the Laplace scale already? The default
+#'   (FALSE) assumes unknown marginal distribution.
+#' @param method.mar a character string defining the method used to estimate the
+#'   marginal GPD; either \code{"mle"} for maximum likelihood or \code{"mom"}
+#'   for method of moments or \code{"pwm"} for probability weighted moments.
+#'   Defaults to \code{"mle"}.
+#' @param nlag integer; number of lags to be considered when modelling the
+#'   dependence in time.
+#' @param par an object of class "bayesparams".
+#' @param submodel a character string; "fom" for \emph{first order Markov},
+#'   "none" for \emph{no particular time structure}, or "ugm" for
+#'   _univariate Gaussian mixture_ (see Details).
+#' @returns An object of class [bayesfit()].
+#' @seealso [thetafit()], [chifit()]
+#' @examples
+#' ## generate data from an AR(1)
+#' ## with Gaussian marginal distribution
+#' n   <- 10000
+#' dep <- 0.5
+#' ar    <- numeric(n)
+#' ar[1] <- rnorm(1)
+#' for(i in 2:n)
+#'   ar[i] <- rnorm(1, mean=dep*ar[i-1], sd=1-dep^2)
+#'
+#' ## rescale the margin
+#' ar <- qlapl(pnorm(ar))
+#' 
+#' ## fit the data
+#' params <- bayesparams()
+#' params$maxit <- 100# bigger numbers would be
+#' params$burn  <- 10 # more sensible...
+#' params$thin  <- 4
+#' fit <- depfit(ts=ar, u.mar=0.95, u.dep=0.98, par=params)
+#'
+#' ########
+#' ## density estimation with submodel=="ugm"
+#' data <- MASS::galaxies/1e3
+#' dens <- depfit(ts=data, par=params, submodel="ugm")
+#' @export
 depfit <- function(ts, u.mar=0, u.dep=u.mar, lapl=FALSE, method.mar=c("mle","mom","pwm"), nlag=1,
                    par=bayesparams(), submodel=c("fom","none","ugm")){
   if(submodel[1]=="ugm"){
@@ -26,23 +82,17 @@ depfit <- function(ts, u.mar=0, u.dep=u.mar, lapl=FALSE, method.mar=c("mle","mom
         mode=par$mode, submodel=submodel)
 }
 
-
-## >   data: matrix, first column is > threshold -- other columns are lagged versions of the first one
-## >   prop.a,prop.b: scalar or vector of length 5 (resp. 3), standard deviation of Gaussian proposal
-## >   prior.mu, prior.nu, prior.eta: vectors of length 2, normal - inverse gamma - gamma (shape,scale) parameters
-## >   trunc: integer, DP approximation of infinite sum
-## >   comp.saved: integer, characteristics only of the first [comp.saved] components are saved in output
-## >   maxit: integer, number of sweeps in MCMC
-## >   burn: integer, burn-in before saving traces
-## >   thin: integer, thinning (1 means keeping all values)
-## >   adapt: integer, used for RAMA on (a,b): 0 means no adaption, otherwise specifies when adaption stops
-## >   batch.size: integer, size of batches for RAMA, between 100 and 1000 typically
-## >   start.ab: string, how starting values for alpha and beta should be chosen; either using a maximum likelihood fit ("guesstimate") or drawn from their prior distributions ("prior")
-## >   mode: {0,1,2}, console output during computations, 0: debug mode - 1: normal mode - 2: silent mode
-## >   submodel: string, structure imposed on (a,b) - defaults to "fom" (first order Markov)
-## <   ret: list, MCMC traces
-## .   called by user
-## ... wrap function for etfit_externC
+#' Raw method for the semiparametric Bayesian fit
+#' 
+#' Wrapper function for `C_et_interface()`. Called by [depfit()], not exposed
+#' to the user.
+#' 
+#' @param data matrix, first column is > threshold -- other columns are lagged
+#'   versions of the first one.
+#' @inheritParams bayesparams
+#' @inheritParams depfit
+#' @returns An object of class [bayesfit()].
+#' @keywords internal
 #' @useDynLib tsxtreme C_et_interface
 htfit <- function(data,
                   prop.a, prop.b,

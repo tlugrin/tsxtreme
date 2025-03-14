@@ -5,11 +5,25 @@
 ##                    - q.res2
 ##################################################
 
-## >   res: vector of reals, quantiles on which to compute the distribution function of the residuals
-## >   sorted.res: vector, EDF
-## <   ret: vector of the same length as z, distribution of the residuals evaluated in z
-## .   called by et.2.step
-
+#' The conditional tail model residual distribution (stepwise)
+#' 
+#' The `p.res2` method is called by [th2est()], the `q.res2` method is called
+#' by [verifies.conditions()] in order to get quantiles of the empirical
+#' distribution function of the residual distribution given
+#' \eqn{(\alpha,\beta)}. Not exposed to the user.
+#' 
+#' @param res vector of reals, quantiles at which to compute the distribution
+#'   function of the residuals.
+#' @param sorted.res vector, empirical distribution function.
+#' @param p scalar, probability (to compute quantiles of residual distribution),
+#'   in [0,1].
+#' @param a scalar, alpha parameter, in [-1,1].
+#' @param b scalar, beta parameter, in [0,1].
+#' @param data bivariate vector, \eqn{(X,Y)} with \eqn{Y | X>u}.
+#' @returns For `p.res2`: a vector of the same length as `res`, distribution of
+#'   the residuals evaluated in `res`. For `q.res2`: a quantile of the residual
+#'   distribution.
+#' @keywords internal
 p.res2 <- function(res, sorted.res){
   n <- length(sorted.res)
   a <- approx(sorted.res, y=(1:n)/(n+1), xout=res, method="linear", ties="ordered", rule=2)$y
@@ -17,13 +31,8 @@ p.res2 <- function(res, sorted.res){
 }
 
 
-
-## >   p: scalar, probability (to compute quantiles of residual distribution), in [0,1]
-## >   a: scalar, alpha parameter, in [-1,1]
-## >   b: scalar, beta parameter, in [0,1]
-## >   data: bivariate vector, (X,Y) with Y | X>u
-## <   boolean, does the couple (a,b) satisfy the conditions?
-## .   called by verifies.conditions to get quantiles of the EDF of the residual distribution given (a,b)
+#' @rdname p.res2
+#' @keywords internal
 q.res2 <- function(p, a, b, data){
   if(dim(data)[2] != 2) stop("data are in the wrong format. Provide a 2-column matrix for (X,y), with Y|X>u")
   Z <- (data[,2] - a*data[,1])/data[,1]^b

@@ -11,11 +11,15 @@
 
 ##################################################
 ## LIKELIHOOD-BASED GPD FIT
-## >   par: vector of 2 reals, scale-shape
-## >   u: scalar, threshold given as a quantile
-## >   x: vector of reals, data on which to fit the GPD
-## <   ret: scalar, value of the negative log-likelihood of the GPD
-## .   called by gpd.mle
+#' Negative log-likelihood and its gradient for the GPD
+#' 
+#' Called by [gpd.mle()], not exposed to the user.
+#' 
+#' @param par vector of 2 reals, scale-shape.
+#' @param u scalar, threshold given as a quantile.
+#' @param x vector of reals, data on which to fit the GPD.
+#' @returns A scalar, value of the negative log-likelihood of the GPD.
+#' @keywords internal
 nllh.gpd <- function(par, u, x){
   exced <- x[x>u]-u
   n     <- length(exced)
@@ -31,6 +35,8 @@ nllh.gpd <- function(par, u, x){
   return(nllh)
 }
 
+#' @rdname nllh.gpd
+#' @keywords internal
 grad.gpd <- function(par, u, x){
   exced <- x[x>u]-u
   n     <- length(exced)
@@ -45,24 +51,31 @@ grad.gpd <- function(par, u, x){
   return(c(d.s,d.x))
 }
 
-
-## >   par: scalar, scale (shape is assumed 0)
-## >   u: scalar, threshold given as a quantile
-## >   x: vector of reals, data on which to fit the GPD
-## <   ret: scalar, value of the negative log-likelihood of the GPD
-## .   called by gpd.mle when shape.null.hyp=TRUE
+#' Negtive log-likelihood for the GPD with null shape
+#' 
+#' Called by [gpd.mle()] when `shape.null.hyp==TRUE`, not exposed to the user.
+#' 
+#' @param par scalar, scale (shape is assumed 0).
+#' @param u scalar, threshold given as a quantile.
+#' @param x vector of reals, data on which to fit the GPD.
+#' @returns A scalar, value of the negative log-likelihood of the GPD
+#' @keywords internal
 nllh.gpd.0 <- function(par, u, x){
   nllh.gpd(c(par,0), u, x)
 }
 
 
-
-## >   ts: vector of reals, stationary time series
-## >   u: scalar, threshold given as a quantile
-## >   hessian: boolean, TRUE means computing the hessian matrix of the likelihood
-## <   ret: list, threshold - MLEs - log-likelihood - standard deviations - covariance matrix
-## .   called by scale.ts
-## ... find MLEs of scale and shape of a GPD
+#' Maximum likelihood estimation for the GPD
+#' 
+#' Called by [scale.ts()], not exposed to the user.
+#' 
+#' @param ts vector of reals, stationary time series.
+#' @param u scalar, threshold given as a quantile.
+#' @param hessian boolean, TRUE means computing the hessian matrix of the
+#'   likelihood.
+#' @returns A list, threshold - MLEs - log-likelihood - standard deviations -
+#'   covariance matrix.
+#' @keywords internal
 gpd.mle <- function(ts, u, hessian=FALSE){
   opt <- optim(c(sd(ts),0.1), fn=nllh.gpd, gr=grad.gpd, u=u, x=ts, hessian=hessian)
   ret <- list(u=u, pars=opt$par, llh=-opt$value)
@@ -75,11 +88,14 @@ gpd.mle <- function(ts, u, hessian=FALSE){
 
 ##################################################
 ## MOMENT-BASED GPD FIT
-## >   ts: vector of reals, stationary time series
-## >   u: scalar, threshold given as a quantile
-## <   ret: list, threshold - MOM estimates
-## .   called by scale.ts
-## ... find MOM estimates of scale and shape of a GPD
+#' Method of moments and probability weighted moments to fit the GPD
+#' 
+#' Called by [scale.ts()], not exposed to the user.
+#' 
+#' @param ts vector of reals, stationary time series.
+#' @param  u scalar, threshold given as a quantile.
+#' @returns A list, threshold - MOM estimates.
+#' @keywords internal
 gpd.mom <- function(ts, u){
   ts <- ts-u
   m <- mean(ts)
@@ -89,6 +105,8 @@ gpd.mom <- function(ts, u){
   return(list(u=u, pars=c(scale,shape)))
 }
 
+#' @rdname gpd.mom
+#' @keywords internal
 gpd.pwm <- function(ts, u){
   ts <- ts-u
   ts <- sort(ts, decreasing=FALSE)
@@ -103,6 +121,10 @@ gpd.pwm <- function(ts, u){
 
 ##################################################
 ## GENERIC FUNCTION
+#' GPD fit wrapper
+#' 
+#' @inheritParams gpd.mom
+#' @keywords internal
 gpd <- function(ts, u, method){
   fct.name <- paste("gpd.",method[1], sep="")
   eval(call(fct.name, ts=ts, u=u))

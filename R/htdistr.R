@@ -5,14 +5,30 @@
 ##                    - r.res
 ##################################################
 
-
-## >   s: integer, ranges across sweeps
-## >   z: array of reals, residuals
-## >   mu,sig: array of reals, means and sd of components [SxKx(m-1)]
-## >   w: matrix of reals, weights of components - rows sum to 1
-## <   ret: matrix of reals, evaluation of H+T residual distribution function
-## .   called by [etfit()] for MC integration
-p.res <- function(s, z, mu, sig, w){
+#' The conditional tail model residual distribution (Bayesian)
+#' 
+#' Distribution function and random generation for the residual distribution of
+#' the Heffernan--Tawn conditional tail model. Intended for the Bayesian
+#' semiparametric approach. The `p.res` method is called by
+#' [etfit()] for Monte-Carlo integration, the `r.res` method is called by
+#' [etfit()] for the proportion method. Not exposed to the user.
+#' 
+#' @param s integer, ranges across sweeps.
+#' @param z array of reals, trace of residuals.
+#' @param w matrix of reals, trace of the weights of components --- rows sum
+#'   to 1.
+#' @param mu,sig arrays of reals, means and standard deviations of the stored
+#'   mixture components output from [depfit()] with dimensions
+#'   _nbr of sweeps_ x _number of components_ x _nbr of lags_.
+#' @param R integer>0, number of samples from a mixture distribution sampled at
+#'   a given iteration.
+#' @param S integer>0, number of posterior iterations used for the estimation.
+#' @param nlag integer>0, number of lags in the original data.
+#' @returns For `p.res`: a matrix of reals, evaluation of the Heffernan--Tawn
+#'   residual distribution function. For `r.res`: a matrix of reals, samples
+#'   of the residual distribution across a sample of iterations.
+#' @keywords internal
+p.res <- function(s, z, w, mu, sig){
   R   <- dim(z)[1]; nlag = dim(z)[3]
   ret <- numeric(R)
   for(r in 1:R){
@@ -25,14 +41,8 @@ p.res <- function(s, z, mu, sig, w){
   return(ret)
 }
 
-
-## >   R: integer>0, nbr of samples used in a single sweep for the estimation
-## >   S: integer>0, nbr of posterior sweeps used for the estimation
-## >   nlag: integer>0, nbr of lags
-## >   w,m,s: matrix - arrays, output from depfit
-## <   sim.Z: matrix of reals, samples of residuals across sweeps
-## .   called by [etfit()] for proportion method
-r.res <- function(R,S,nlag,w,m,s){
+#' @rdname p.res
+r.res <- function(R, S, nlag, w, mu, sig){
   sim.Z <- array(0, dim=c(R,S,nlag))
   
   for(sw in 1:S){# loop on selected sweeps
