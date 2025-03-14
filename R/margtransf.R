@@ -11,6 +11,7 @@
 
 ##################################################
 ## FORMAT TIME SERIES FOR H+T MODEL
+
 #' Pre-process time series to feed Heffernan--Tawn model
 #' 
 #' Called by [etfit()] and [et2fit()], not exposed to the user.
@@ -36,6 +37,7 @@ format.ts <- function(ts, u.mar, u.dep, method=c("mle","mom","pwm"), nlag, lapl=
 
 ##################################################
 ## MARGINAL TRANSFORMATIONS
+
 #' Marginal transformation to Laplace scale
 #' 
 #' Called by [format.ts()], not exposed to the user.

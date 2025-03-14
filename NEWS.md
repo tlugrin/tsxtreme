@@ -2,9 +2,10 @@
 
 * add option to set starting values for alpha and beta
 * fix bug in the computation of the Monte-Carlo integration
-* TOOD: migrate documentation to roxygen
-* TODO: update documentation throughout package
+* migrate documentation to roxygen
+* update documentation throughout package
 * TODO: update code to conform to modern R conventions
+* TODO: deprecate dot-notation methods
 
 # version 0.3.4
 

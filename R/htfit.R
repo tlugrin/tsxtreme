@@ -93,7 +93,6 @@ depfit <- function(ts, u.mar=0, u.dep=u.mar, lapl=FALSE, method.mar=c("mle","mom
 #' @inheritParams depfit
 #' @returns An object of class [bayesfit()].
 #' @keywords internal
-#' @useDynLib tsxtreme C_et_interface
 htfit <- function(data,
                   prop.a, prop.b,
                   prior.mu=c(0,10), prior.nu=c(2,1/2), prior.eta=c(4,1),

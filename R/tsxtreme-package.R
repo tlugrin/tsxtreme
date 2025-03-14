@@ -1,6 +1,3 @@
-#' @keywords internal
-"_PACKAGE"
-
 #' @details
 #' The Heffernan--Tawn conditional formulation for a stationary time series
 #' \eqn{(X_t)} with Laplace marginal distribution states that for a large enough
@@ -50,8 +47,13 @@
 #' Lugrin, T., Davison, A. C. and Tawn, J. A. (2016) Bayesian uncertainty
 #' management in temporal dependence of extremes. \emph{Extremes}, \bold{19}, 491--515.
 #' 
-#' @keywords package
 #' @seealso [thetafit()], [chifit()], [depfit()]
-#' @aliases tsxtreme-package
+#' @keywords internal
+#' @useDynLib tsxtreme, .registration = TRUE, .fixes = "C_"
+#' @import mvtnorm stats
+#' @importFrom evd qgpd
+#' @importFrom MASS kde2d
+#' @importFrom graphics contour hist lines par plot
+"_PACKAGE"
 
 NULL
