@@ -6,19 +6,19 @@
 \usage{
 htfit(
   data,
-  prop.a,
-  prop.b,
-  prior.mu = c(0, 10),
-  prior.nu = c(2, 1/2),
-  prior.eta = c(4, 1),
+  prop_a,
+  prop_b,
+  prior_mu = c(0, 10),
+  prior_nu = c(2, 1/2),
+  prior_eta = c(4, 1),
   trunc = 100,
-  comp.saved = 10,
+  comp_saved = 10,
   maxit = 10000,
   burn = 2000,
   thin = 4,
   adapt = 2000,
-  batch.size = 125,
-  start.ab = c("guesstimate", "prior"),
+  batch_size = 125,
+  start_ab = c("guesstimate", "prior"),
   mode = 1,
   submodel = c("fom", "none", "ugm")
 )
@@ -26,6 +26,44 @@ htfit(
 \arguments{
 \item{data}{matrix, first column is > threshold -- other columns are lagged
 versions of the first one.}
+
+\item{prop_a, prop_b}{standard deviation for the Gaussian proposal
+distributions of the Heffernan--Tawn model parameters; see also Details.}
+
+\item{prior_mu}{mean and standard deviation parameters for the Gaussian prior
+distribution of the components' means.}
+
+\item{prior_nu}{shape and rate parameters for the inverse gamma prior
+distribution of the components' variances.}
+
+\item{prior_eta}{shape and scale parameters for the gamma prior distribution
+of the precision parameter used in the Dirichlet process.}
+
+\item{trunc}{integer; truncation parameter for approximating the infinite sum
+in the stick-breaking process.}
+
+\item{comp_saved}{number of components to be stored and returned.}
+
+\item{maxit}{total number of iterations to perform (fewer are saved based on
+\code{burn} and \code{thin}).}
+
+\item{burn}{number of first iterations to discard.}
+
+\item{thin}{spacing between iterations to be saved. Defaults to 1, i.e., all
+iterations are saved.}
+
+\item{adapt}{number of iterations during which an adaptive scheme (RAMA:
+Regional Adaptive Monte-Carlo Algorithm) is applied to the proposal
+variances of \eqn{\alpha} and \eqn{\beta}; 0 means no adaption.}
+
+\item{batch_size}{size of batches used in the adaption algorithm. It has no effect if \code{adapt==0}.}
+
+\item{start_ab}{either "guesstimate" to initialise start values for alpha and
+beta from a stepwise fit or "prior" to use random draws from their
+respective prior distributions.}
+
+\item{mode}{verbosity; 0 for debug mode, 1 (default) for standard output,
+and 2 for silent.}
 
 \item{submodel}{a character string; "fom" for \emph{first order Markov},
 "none" for \emph{no particular time structure}, or "ugm" for

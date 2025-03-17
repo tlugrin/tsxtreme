@@ -12,20 +12,24 @@ thetafit(
   nlag = 1,
   R = 1000,
   S = 500,
-  u.mar = 0,
-  u.dep,
-  probs = seq(u.dep, 0.9999, length.out = 30),
-  method.mar = c("mle", "mom", "pwm"),
+  u_mar = 0,
+  u_dep,
+  probs = seq(u_dep, 0.9999, length.out = 30),
+  method_mar = c("mle", "mom", "pwm"),
   method = c("prop", "MCi"),
   silent = FALSE,
   fit = TRUE,
-  prev.fit = bayesfit(),
+  prev_fit = bayesfit(),
   par = bayesparams(),
   submodel = c("fom", "none"),
-  levels = c(0.025, 0.975)
+  levels = c(0.025, 0.975),
+  u.mar = deprecated(),
+  u.dep = deprecated(),
+  method.mar = deprecated(),
+  prev.fit = deprecated()
 )
 
-etfit(data, R, S, probs, method, silent, fit, prev.fit, par, submodel, levels)
+etfit(data, R, S, probs, method, silent, fit, prev_fit, par, submodel, levels)
 
 chifit(
   ts,
@@ -33,17 +37,21 @@ chifit(
   nlag = 1,
   R = 1000,
   S = 500,
-  u.mar = 0,
-  u.dep,
-  probs = seq(u.dep, 0.9999, length.out = 30),
-  method.mar = c("mle", "mom", "pwm"),
+  u_mar = 0,
+  u_dep,
+  probs = seq(u_dep, 0.9999, length.out = 30),
+  method_mar = c("mle", "mom", "pwm"),
   method = c("prop", "MCi"),
   silent = FALSE,
   fit = TRUE,
-  prev.fit = bayesfit(),
+  prev_fit = bayesfit(),
   par = bayesparams(),
   submodel = c("fom", "none"),
-  levels = c(0.025, 0.975)
+  levels = c(0.025, 0.975),
+  u.mar = deprecated(),
+  u.dep = deprecated(),
+  method.mar = deprecated(),
+  prev.fit = deprecated()
 )
 }
 \arguments{
@@ -53,7 +61,7 @@ chifit(
 (see Details).}
 
 \item{lapl}{logical; \code{TRUE} indicates that \code{ts} has a marginal
-Laplace distribution. If \code{FALSE} (default), \code{method.mar} is used
+Laplace distribution. If \code{FALSE} (default), \code{method_mar} is used
 to transform the marginal distribution of \code{ts} to the Laplace scale.}
 
 \item{nlag}{the run-length; an integer larger or equal to 1.}
@@ -64,15 +72,15 @@ posterior distributions; used for the estimation of the dependence measure.}
 \item{S}{the number of posterior distributions sampled from the MCMC trace
 to be used for the estimation of the dependence measure.}
 
-\item{u.mar}{probability; threshold used for marginal transformation if
+\item{u_mar}{probability; threshold used for marginal transformation if
 \code{lapl} is \code{FALSE}. Ignored otherwise.}
 
-\item{u.dep}{probability; threshold used for the extremal dependence model.}
+\item{u_dep}{probability; threshold used for the extremal dependence model.}
 
 \item{probs}{vector of probabilities; the values of \eqn{x} for which to
 evaluate \eqn{\theta(x,m)} or \eqn{\chi_m(x)}.}
 
-\item{method.mar}{a character string defining the method used to estimate the
+\item{method_mar}{a character string defining the method used to estimate the
 marginal GPD; either \code{"mle"} for maximum likelihood of \code{"mom"}
 for method of moments or \code{"pwm"} for probability weighted moments
 methods. Defaults to \code{"mle"}.}
@@ -85,9 +93,9 @@ for Monte Carlo integration (see details).}
 
 \item{fit}{logical; \code{TRUE} means that the dependence model must be
 fitted and the values in \code{par} are used to calibrate the MCMC.
-Otherwise \code{prev.fit} is required and provides the necessary dependence fit.}
+Otherwise \code{prev_fit} is required and provides the necessary dependence fit.}
 
-\item{prev.fit}{an object of class \code{\link[=bayesfit]{bayesfit()}}, e.g., the result from a
+\item{prev_fit}{an object of class \code{\link[=bayesfit]{bayesfit()}}, e.g., the result from a
 previous call to \code{\link[=depfit]{depfit()}}. Required if \code{fit} is \code{FALSE}.}
 
 \item{par}{an object of class \code{\link[=bayesparams]{bayesparams()}} to be used for the fit of
@@ -98,6 +106,15 @@ the dependence model.}
 
 \item{levels}{a vector of probabilites, coverage levels; the quantiles of the
 posterior distribution of the extremal measure to be computed.}
+
+\item{u.mar}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} use \code{u_mar} instead.}
+
+\item{u.dep}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} use \code{u_dep} instead.}
+
+\item{method.mar}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} use \code{method_mar}
+instead.}
+
+\item{prev.fit}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} use \code{prev_fit} instead.}
 }
 \value{
 An object of class \code{\link[=depmeasure]{depmeasure()}} of \code{type} either "theta" or "chi".
@@ -147,11 +164,11 @@ dep <- 0.5
 ar    <- numeric(n)
 ar[1] <- rnorm(1)
 for(i in 2:n)
-  ar[i] <- rnorm(1, mean=dep*ar[i-1], sd=1-dep^2)
-plot(ar, type="l")
+  ar[i] <- rnorm(1, mean = dep*ar[i-1], sd = 1-dep^2)
+plot(ar, type = "l")
 plot(density(ar))
 grid <- seq(-3,3,0.01)
-lines(grid, dnorm(grid), col="blue")
+lines(grid, dnorm(grid), col = "blue")
 
 ## rescale the margin (focus on dependence)
 ar <- qlapl(pnorm(ar))
@@ -161,13 +178,13 @@ params <- bayesparams()
 params$maxit <- 100 # bigger numbers would be
 params$burn  <- 10  # more sensible...
 params$thin  <- 4
-theta <- thetafit(ts=ar, R=500, S=100, u.mar=0.95, u.dep=0.98,
-                  probs = c(0.98, 0.999), par=params)
+theta <- thetafit(ts = ar, R = 500, S = 100, u_mar = 0.95, u_dep = 0.98,
+                  probs = c(0.98, 0.999), par = params)
 ## or, same thing in two steps to control fit output before computing theta:
-fit <- depfit(ts=ar, u.mar=0.95, u.dep=0.98, par=params)
+fit <- depfit(ts = ar, u_mar = 0.95, u_dep = 0.98, par = params)
 plot(fit)
-theta <- thetafit(ts=ar, R=500, S=100, u.mar=0.95, u.dep=0.98,
-                  probs = c(0.98, 0.999), fit=FALSE, prev.fit=fit)
+theta <- thetafit(ts = ar, R = 500, S = 100, u_mar = 0.95, u_dep = 0.98,
+                  probs = c(0.98, 0.999), fit = FALSE, prev_fit = fit)
 }
 \seealso{
 \code{\link[=depfit]{depfit()}}, \code{\link[=theta2fit]{theta2fit()}}, \code{\link[=thetaruns]{thetaruns()}}

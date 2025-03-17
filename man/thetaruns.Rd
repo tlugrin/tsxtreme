@@ -9,12 +9,16 @@ thetaruns(
   ts,
   lapl = FALSE,
   nlag = 1,
-  u.mar = 0,
-  probs = seq(u.mar, 0.995, length.out = 30),
-  method.mar = c("mle", "mom", "pwm"),
-  R.boot = 0,
-  block.length = (nlag + 1) * 5,
-  levels = c(0.025, 0.975)
+  u_mar = 0,
+  probs = seq(u_mar, 0.995, length.out = 30),
+  method_mar = c("mle", "mom", "pwm"),
+  R_boot = 0,
+  block_length = (nlag + 1) * 5,
+  levels = c(0.025, 0.975),
+  u.mar = deprecated(),
+  method.mar = deprecated(),
+  R.boot = deprecated(),
+  block.length = deprecated()
 )
 }
 \arguments{
@@ -27,7 +31,7 @@ extremal index \eqn{\theta(x,m)}, with \eqn{x} a probability level and
 
 \item{nlag}{the run-length; an integer larger or equal to 1.}
 
-\item{u.mar}{marginal threshold (probability); used when transforming the
+\item{u_mar}{marginal threshold (probability); used when transforming the
 time series to Laplace scale if \code{lapl} is \code{FALSE}; if \code{lapl} is \code{TRUE},
 it is nevertheless used when bootstrapping, since the bootstrapped series
 generally do not have Laplace marginal distributions.}
@@ -35,23 +39,32 @@ generally do not have Laplace marginal distributions.}
 \item{probs}{vector of probabilities; the values of \code{x} for which to evaluate
 \eqn{\theta(x,m)}.}
 
-\item{method.mar}{a character string defining the method used to estimate the
+\item{method_mar}{a character string defining the method used to estimate the
 marginal GPD; either \code{"mle"} for maximum likelihood or \code{"mom"} for method
 of moments or \code{"pwm"} for probability weighted moments methods. Defaults to
 \code{"mle"}.}
 
-\item{R.boot}{integer; the number of samples used for the block bootstrap.}
+\item{R_boot}{integer; the number of samples used for the block bootstrap.}
 
-\item{block.length}{integer; the block length used for the block-bootstrapped
+\item{block_length}{integer; the block length used for the block-bootstrapped
 confidence intervals.}
 
 \item{levels}{vector of probabilites; the quantiles of the posterior
 distribution of the extremal index \eqn{\theta(x,m)} to output.}
+
+\item{u.mar}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} use \code{u_mar} instead.}
+
+\item{method.mar}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} use \code{method_mar} instead.}
+
+\item{R.boot}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} use \code{R_boot}instead.}
+
+\item{block.length}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} use \code{block_length}
+instead.}
 }
 \value{
 An object of class \code{\link[=depmeasure]{depmeasure()}} containing:
 \item{theta }{matrix; estimates of the extremal index \eqn{\theta(x,m)} with rows corresponding to the \code{probs} values of \eqn{x} and the columns to the runs estimate and the chosen \code{levels}-quantiles of the bootstrap distribution.}
-\item{nbr.exc }{numeric vector; number of exceedances for each threshold corresponding to the elements in \code{probs}.}
+\item{nbr_exc }{numeric vector; number of exceedances for each threshold corresponding to the elements in \code{probs}.}
 \item{probs }{\code{probs}.}
 \item{levels }{numeric vector; \code{probs} converted to the original scale of \code{ts}.}
 \item{nlag }{\code{nlag}.}
@@ -91,7 +104,7 @@ for(i in 2:n)
 ## transform to Laplace scale
 ar <- qlapl(pnorm(ar))
 ## compute empirical estimate
-theta <- thetaruns(ts=ar, u.mar=.95, probs=c(.95,.98,.99))
+theta <- thetaruns(ts=ar, u_mar=.95, probs=c(.95,.98,.99))
 ## output
 plot(theta, ylim=c(.2,1))
 abline(h=1, lty="dotted")

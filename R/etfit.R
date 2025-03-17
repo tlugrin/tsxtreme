@@ -49,19 +49,23 @@
 #'   \eqn{\chi_m(x)}, with \eqn{x} a probability level and \eqn{m} a run-length
 #'   (see Details).
 #' @param lapl logical; \code{TRUE} indicates that \code{ts} has a marginal
-#'   Laplace distribution. If \code{FALSE} (default), \code{method.mar} is used
+#'   Laplace distribution. If \code{FALSE} (default), \code{method_mar} is used
 #'   to transform the marginal distribution of \code{ts} to the Laplace scale.
 #' @param nlag the run-length; an integer larger or equal to 1.
 #' @param R the number of samples per MCMC iteration drawn from the sampled `S`
 #'   posterior distributions; used for the estimation of the dependence measure.
 #' @param S the number of posterior distributions sampled from the MCMC trace
 #'   to be used for the estimation of the dependence measure.
-#' @param u.mar probability; threshold used for marginal transformation if
+#' @param u.mar `r lifecycle::badge('deprecated')` use `u_mar` instead.
+#' @param u_mar probability; threshold used for marginal transformation if
 #'   \code{lapl} is \code{FALSE}. Ignored otherwise.
-#' @param u.dep probability; threshold used for the extremal dependence model.
+#' @param u.dep `r lifecycle::badge('deprecated')` use `u_dep` instead.
+#' @param u_dep probability; threshold used for the extremal dependence model.
 #' @param probs vector of probabilities; the values of \eqn{x} for which to
 #'   evaluate \eqn{\theta(x,m)} or \eqn{\chi_m(x)}.
-#' @param method.mar a character string defining the method used to estimate the
+#' @param method.mar `r lifecycle::badge('deprecated')` use `method_mar`
+#'   instead.
+#' @param method_mar a character string defining the method used to estimate the
 #'   marginal GPD; either \code{"mle"} for maximum likelihood of \code{"mom"}
 #'   for method of moments or \code{"pwm"} for probability weighted moments
 #'   methods. Defaults to \code{"mle"}.
@@ -71,8 +75,9 @@
 #' @param silent logical (\code{FALSE}); verbosity.
 #' @param fit logical; \code{TRUE} means that the dependence model must be
 #'   fitted and the values in \code{par} are used to calibrate the MCMC.
-#'   Otherwise `prev.fit` is required and provides the necessary dependence fit.
-#' @param prev.fit an object of class [bayesfit()], e.g., the result from a
+#'   Otherwise `prev_fit` is required and provides the necessary dependence fit.
+#' @param prev.fit `r lifecycle::badge('deprecated')` use `prev_fit` instead.
+#' @param prev_fit an object of class [bayesfit()], e.g., the result from a
 #'   previous call to [depfit()]. Required if \code{fit} is `FALSE`.
 #' @param par an object of class [bayesparams()] to be used for the fit of
 #'   the dependence model.
@@ -89,12 +94,12 @@
 #' dep <- 0.5
 #' ar    <- numeric(n)
 #' ar[1] <- rnorm(1)
-#' for(i in 2:n)
-#'   ar[i] <- rnorm(1, mean=dep*ar[i-1], sd=1-dep^2)
-#' plot(ar, type="l")
+#' for (i in 2:n)
+#'   ar[i] <- rnorm(1, mean = dep*ar[i-1], sd = 1-dep^2)
+#' plot(ar, type = "l")
 #' plot(density(ar))
 #' grid <- seq(-3,3,0.01)
-#' lines(grid, dnorm(grid), col="blue")
+#' lines(grid, dnorm(grid), col = "blue")
 #' 
 #' ## rescale the margin (focus on dependence)
 #' ar <- qlapl(pnorm(ar))
@@ -104,26 +109,58 @@
 #' params$maxit <- 100 # bigger numbers would be
 #' params$burn  <- 10  # more sensible...
 #' params$thin  <- 4
-#' theta <- thetafit(ts=ar, R=500, S=100, u.mar=0.95, u.dep=0.98,
-#'                   probs = c(0.98, 0.999), par=params)
+#' theta <- thetafit(ts = ar, R = 500, S = 100, u_mar = 0.95, u_dep = 0.98,
+#'                   probs = c(0.98, 0.999), par = params)
 #' ## or, same thing in two steps to control fit output before computing theta:
-#' fit <- depfit(ts=ar, u.mar=0.95, u.dep=0.98, par=params)
+#' fit <- depfit(ts = ar, u_mar = 0.95, u_dep = 0.98, par = params)
 #' plot(fit)
-#' theta <- thetafit(ts=ar, R=500, S=100, u.mar=0.95, u.dep=0.98,
-#'                   probs = c(0.98, 0.999), fit=FALSE, prev.fit=fit)
+#' theta <- thetafit(ts = ar, R = 500, S = 100, u_mar = 0.95, u_dep = 0.98,
+#'                   probs = c(0.98, 0.999), fit = FALSE, prev_fit = fit)
 #' @export
-thetafit <- function(ts, lapl=FALSE, nlag=1, R=1000, S=500,
-                  u.mar=0, u.dep, probs=seq(u.dep,0.9999,length.out=30),
-                  method.mar=c("mle","mom","pwm"), method=c("prop","MCi"),
-                  silent=FALSE,
-                  fit=TRUE, prev.fit=bayesfit(), par=bayesparams(),
-                  submodel=c("fom","none"), levels=c(.025,.975)){
-  data.up <- format.ts(ts=ts, u.mar=u.mar, u.dep=u.dep, method=method.mar,
+thetafit <- function(ts,
+                     lapl = FALSE,
+                     nlag = 1,
+                     R = 1000,
+                     S = 500,
+                     u_mar = 0,
+                     u_dep,
+                     probs = seq(u_dep, 0.9999, length.out = 30),
+                     method_mar = c("mle","mom","pwm"),
+                     method = c("prop","MCi"),
+                     silent = FALSE,
+                     fit = TRUE,
+                     prev_fit = bayesfit(),
+                     par = bayesparams(),
+                     submodel = c("fom","none"),
+                     levels = c(.025,.975),
+                     u.mar = deprecated(),
+                     u.dep = deprecated(),
+                     method.mar = deprecated(),
+                     prev.fit = deprecated()) {
+  if (lifecycle::is_present(u.mar)) {
+    lifecycle::deprecate_warn("0.4.0", "thetafit(u.mar)", "thetafit(u_mar)")
+    u_mar <- u.mar
+  }
+  if (lifecycle::is_present(u.dep)) {
+    lifecycle::deprecate_warn("0.4.0", "thetafit(u.dep)", "thetafit(u_dep)")
+    u_dep <- u.dep
+  }
+  if (lifecycle::is_present(method.mar)) {
+    lifecycle::deprecate_warn("0.4.0", "thetafit(method.mar)",
+                              "thetafit(method_mar)")
+    method_mar <- method.mar
+  }
+  if (lifecycle::is_present(prev.fit)) {
+    lifecycle::deprecate_warn("0.4.0", "thetafit(prev.fit)",
+                              "thetafit(prev_fit)")
+    prev_fit <- prev.fit
+  }
+  data_up <- format_ts(ts=ts, u_mar=u_mar, u_dep=u_dep, method=method_mar,
                        nlag=nlag, lapl=lapl)
-  ret <- etfit(data=data.up, R=R, S=S, probs=probs, method=method, silent=silent,
-              fit=fit, prev.fit=prev.fit, par=par, submodel=submodel, levels=levels)
-  mesh.O     <- scale.to.original(p=probs, ts=ts, u=u.mar, gpd.pars=gpd(ts, u=u.mar, method=method.mar)$pars)
-  ret$levels <- mesh.O
+  ret <- etfit(data=data_up, R=R, S=S, probs=probs, method=method, silent=silent,
+              fit=fit, prev_fit=prev_fit, par=par, submodel=submodel, levels=levels)
+  mesh_O     <- scale_to_original(p=probs, ts=ts, u=u_mar, gpd_pars=gpd(ts, u=u_mar, method=method_mar)$pars)
+  ret$levels <- mesh_O
   return(ret)
 }
 
@@ -131,34 +168,45 @@ thetafit <- function(ts, lapl=FALSE, nlag=1, R=1000, S=500,
 #' @keywords internal
 etfit <- function(data, R, S, probs, method,
                   silent,
-                  fit, prev.fit, par, submodel, levels){
-  data.up <- data
-  n       <- dim(data.up)[1]
+                  fit, prev_fit, par, submodel, levels) {
+  data_up <- data
+  n       <- dim(data_up)[1]
   mesh    <- probs
   
-  if(fit){
-    if(!is.bayesparams(par)) stop("par must be of class 'bayesparams'.")
-    fit <- htfit(data.up, prop.a=par$prop.a, prop.b=par$prop.b,
-                prior.mu=par$prior.mu, prior.nu=par$prior.nu, prior.eta=par$prior.eta,
-                trunc=par$trunc, comp.saved=par$comp.saved, maxit=par$maxit,
-                burn=par$burn, thin=par$thin,
-                adapt=par$adapt, batch.size=par$batch.size, mode=par$mode, submodel=submodel)
-    if(!silent)
+  if (fit) {
+    if (!is.bayesparams(par)) stop('par must be of class "bayesparams".')
+    fit <- htfit(data_up,
+                 prop_a = par$prop_a,
+                 prop_b = par$prop_b,
+                 prior_mu = par$prior_mu,
+                 prior_nu = par$prior_nu,
+                 prior_eta = par$prior_eta,
+                 trunc = par$trunc,
+                 comp_saved = par$comp_saved,
+                 maxit = par$maxit,
+                 burn = par$burn,
+                 thin = par$thin,
+                 adapt = par$adapt,
+                 batch_size = par$batch_size,
+                 mode = par$mode,
+                 submodel = submodel)
+    if (!silent)
       print(paste("Fit of DDP done. Mean value for alpha & beta:",
-                  signif(apply(fit$a, 2, mean),3),"and",
-                  signif(apply(fit$b, 2, mean),3)))
-  }else{
-    if(!is.bayesfit(prev.fit)) stop("prev.fit must be of class 'bayesfit'.")
-    if(prev.fit$len == 0) stop("prev.fit must contain a proper instance of class 'bayesfit'.")
-    fit <- prev.fit
+                  signif (apply(fit$a, 2, mean),3),"and",
+                  signif (apply(fit$b, 2, mean),3)))
+  } else {
+    if (!is.bayesfit(prev_fit)) stop('prev_fit must be of class "bayesfit".')
+    if (prev_fit$len == 0)
+      stop('prev_fit must contain a proper instance of class "bayesfit".')
+    fit <- prev_fit
   }
   # set up parameters for theta
   tictoc::tic()
   nit      <- dim(fit$a)[1]
   nlag     <- dim(fit$a)[2]
-  mesh.L   <- qexp(1-(1-mesh)*2)
-  nbr.vert <- length(mesh.L)
-  sim.U    <- runif(R)
+  mesh_L   <- qexp(1-(1-mesh)*2)
+  nbr_vert <- length(mesh_L)
+  sim_U    <- runif (R)
   it <- sample.int(nit, S, replace=TRUE)
   a  <- as.double(fit$a[it,])
   b  <- as.double(fit$b[it,])
@@ -171,42 +219,42 @@ etfit <- function(data, R, S, probs, method,
   ret$probs <- mesh
   ret$nlag  <- nlag
   # method of proportions: generate residuals
-  if(grepl("prop",method[1])){
-    sim.Z <- r.res(R=R, S=S, nlag=nlag, w=w, mu=m, sig=s)
+  if (grepl("prop",method[1])) {
+    sim_Z <- r_res(R=R, S=S, nlag=nlag, w=w, mu=m, sig=s)
   }
-  nbr.quant <- length(levels)+2
-  th    <- matrix(0, nrow=nbr.vert, ncol=nbr.quant,
+  nbr_quant <- length(levels)+2
+  th    <- matrix(0, nrow=nbr_vert, ncol=nbr_quant,
                  dimnames=list(NULL,c("mean","median",paste(levels*100,"%",sep=""))))
-  distr <- matrix(0, nrow=nbr.vert, ncol=S) # compute coverage/RMSE when true theta is known
-  for(i in 1:nbr.vert){
-    sim.L <- -log(2*(1-mesh[i]-(1-mesh[i])*sim.U))
+  distr <- matrix(0, nrow=nbr_vert, ncol=S) # compute coverage/RMSE when true theta is known
+  for (i in 1:nbr_vert) {
+    sim_L <- -log(2*(1-mesh[i]-(1-mesh[i])*sim_U))
     ## method of proportions
-    if(grepl("prop", method[1])){
-      sim.Y <- sim.L%*%t(a) + exp(log(sim.L)%*%t(b))*sim.Z# [RxS*(m-1)]
-      sim.Y <- matrix(sim.Y, nrow=R*S, ncol=nlag)
-      max.Y  <- apply(sim.Y, 1, max)
-      max.Y  <- matrix(max.Y, nrow=R, ncol=S)
-      th.tmp <- colSums(max.Y < mesh.L[i])/R
-      distr[i,] <- th.tmp
-      th[i,]    <- c(mean(th.tmp), median(th.tmp), quantile(th.tmp, levels))
-    }## Monte Carlo integration
-    else if(grepl("MCi",method[1])){
-      mesh.Z <- (mesh.L[i]-sim.L%*%t(a))/exp(log(sim.L)%*%t(b))# [RxS(m-1)]
-      mesh.Z <- array(mesh.Z, dim=c(R,S,nlag))
-      HZ      <- vapply(1:S, p.res, z=mesh.Z, w=w, mu=m, sig=s, FUN.VALUE=numeric(R))# [RxS]
-      th.samp <- colMeans(HZ)# [S]
-      distr[i,] <- th.samp
-      th[i,]    <- c(mean(th.samp), median(th.samp), quantile(th.samp, levels))
+    if (grepl("prop", method[1])) {
+      sim_Y <- sim_L%*%t(a) + exp(log(sim_L)%*%t(b))*sim_Z# [RxS*(m-1)]
+      sim_Y <- matrix(sim_Y, nrow=R*S, ncol=nlag)
+      max_Y  <- apply(sim_Y, 1, max)
+      max_Y  <- matrix(max_Y, nrow=R, ncol=S)
+      th_tmp <- colSums(max_Y < mesh_L[i])/R
+      distr[i,] <- th_tmp
+      th[i,]    <- c(mean(th_tmp), median(th_tmp), quantile(th_tmp, levels))
+    } else if (grepl("MCi",method[1])) {## Monte Carlo integration
+      mesh_Z <- (mesh_L[i]-sim_L%*%t(a))/exp(log(sim_L)%*%t(b))# [RxS(m-1)]
+      mesh_Z <- array(mesh_Z, dim=c(R,S,nlag))
+      HZ     <- vapply(1:S, p_res, z=mesh_Z, w=w, mu=m, sig=s,
+                        FUN.VALUE=numeric(R))# [RxS]
+      th_samp <- colMeans(HZ)# [S]
+      distr[i,] <- th_samp
+      th[i,]    <- c(mean(th_samp), median(th_samp), quantile(th_samp, levels))
     }
   }
   # return and summaries
   ret$theta <- th
   ret$distr <- distr
   time <- toc(silent=TRUE)
-  if(!silent){
+  if (!silent) {
     print(paste("Time elapsed on estimating theta: ",
                 time%/%60," min ",round(time-60*(time%/%60), 1)," sec.", sep=""))
-    print(paste("Time per x-value: ",round(time/nbr.vert, 1)," sec.", sep=""))
+    print(paste("Time per x-value: ",round(time/nbr_vert, 1)," sec.", sep=""))
   }
   return(ret)
 }
@@ -218,47 +266,91 @@ etfit <- function(data, R, S, probs, method,
 
 #' @rdname thetafit
 #' @export
-chifit <- function(ts, lapl=FALSE, nlag=1, R=1000, S=500,
-                   u.mar=0, u.dep, probs=seq(u.dep,0.9999,length.out=30),
-                   method.mar=c("mle","mom","pwm"), method=c("prop","MCi"),
-                   silent=FALSE,
-                   fit=TRUE, prev.fit=bayesfit(), par=bayesparams(),
-                   submodel=c("fom","none"), levels=c(.025,.975)){
+chifit <- function(ts,
+                   lapl = FALSE,
+                   nlag = 1,
+                   R = 1000,
+                   S = 500,
+                   u_mar = 0,
+                   u_dep,
+                   probs = seq(u_dep, 0.9999, length.out = 30),
+                   method_mar = c("mle","mom","pwm"),
+                   method = c("prop","MCi"),
+                   silent = FALSE,
+                   fit = TRUE,
+                   prev_fit = bayesfit(),
+                   par = bayesparams(),
+                   submodel = c("fom","none"),
+                   levels = c(.025,.975),
+                   u.mar = deprecated(),
+                   u.dep = deprecated(),
+                   method.mar = deprecated(),
+                   prev.fit = deprecated()) {
+  if (lifecycle::is_present(u.mar)) {
+    lifecycle::deprecate_warn("0.4.0", "chifit(u.mar)", "chifit(u_mar)")
+    u_mar <- u.mar
+  }
+  if (lifecycle::is_present(u.dep)) {
+    lifecycle::deprecate_warn("0.4.0", "chifit(u.dep)", "chifit(u_dep)")
+    u_dep <- u.dep
+  }
+  if (lifecycle::is_present(method.mar)) {
+    lifecycle::deprecate_warn("0.4.0", "chifit(method.mar)",
+                              "chifit(method_mar)")
+    method_mar <- method.mar
+  }
+  if (lifecycle::is_present(prev.fit)) {
+    lifecycle::deprecate_warn("0.4.0", "chifit(prev.fit)", "chifit(prev_fit)")
+    prev_fit <- prev.fit
+  }
   # pre-process data
-  data.up <- format.ts(ts=ts, u.mar=u.mar, u.dep=u.dep, method=method.mar,
-                       nlag=nlag, lapl=lapl)
-  n       <- dim(data.up)[1]
+  data_up <- format_ts(ts = ts, u_mar = u_mar, u_dep = u_dep,
+                       method = method_mar, nlag = nlag, lapl = lapl)
+  n       <- dim(data_up)[1]
   mesh    <- probs
-  mesh.O  <- scale.to.original(p=mesh, ts=ts, u=u.mar, gpd.pars=gpd(ts, u=u.mar, method=method.mar)$pars)
+  mesh_O  <- scale_to_original(p = mesh, ts = ts, u = u_mar,
+                               gpd_pars = gpd(ts, u = u_mar,
+                                              method = method_mar)$pars)
   # H+T fit
-  if(fit){
-    if(!is.bayesparams(par)) stop("par must be of class 'bayesparams'.")
-    fit <- htfit(data.up, prop.a=par$prop.a, prop.b=par$prop.b,
-                prior.mu=par$prior.mu, prior.nu=par$prior.nu, prior.eta=par$prior.eta,
-                trunc=par$trunc, comp.saved=par$comp.saved, maxit=par$maxit,
-                burn=par$burn, thin=par$thin,
-                adapt=par$adapt, batch.size=par$batch.size, mode=par$mode, submodel=submodel)
-    if(!silent)
+  if (fit) {
+    if (!is.bayesparams(par)) stop('par must be of class "bayesparams".')
+    fit <- htfit(data_up,
+                 prop_a = par$prop_a,
+                 prop_b = par$prop_b,
+                 prior_mu = par$prior_mu,
+                 prior_nu = par$prior_nu,
+                 prior_eta = par$prior_eta,
+                 trunc = par$trunc,
+                 comp_saved = par$comp_saved,
+                 maxit=par$maxit,
+                 burn = par$burn,
+                 thin = par$thin,
+                 adapt = par$adapt,
+                 batch_size = par$batch_size,
+                 mode = par$mode,
+                 submodel = submodel)
+    if (!silent)
       print(paste("Fit of DDP done. Mean value for alpha & beta:",
-                  signif(apply(fit$a, 2, mean),3),"and",
-                  signif(apply(fit$b, 2, mean),3)))
-  }else{
-    if(!is.bayesfit(prev.fit)) stop("prev.fit must be of class 'bayesfit'.")
-    if(prev.fit$len == 0) stop("prev.fit must contain a proper instance of class 'bayesfit'.")
-    fit <- prev.fit
+                  signif (apply(fit$a, 2, mean),3),"and",
+                  signif (apply(fit$b, 2, mean),3)))
+  } else {
+    if (!is.bayesfit(prev_fit)) stop('prev_fit must be of class "bayesfit".')
+    if (prev_fit$len == 0)
+      stop('prev_fit must contain a proper instance of class "bayesfit".')
+    fit <- prev_fit
   }
   tictoc::tic()
   ret <- depmeasure("chi")
   ret$bayesfit <- fit
   ret$probs    <- mesh
-  ret$levels   <- mesh.O
+  ret$levels   <- mesh_O
   ret$nlag     <- nlag
-  # call etfit on (X_1,X_j) to get distr and/or distr.MC
+  # call etfit on (X_1,X_j) to get distr and/or distr_MC
   len       <- dim(fit$a)[1]
-  n.comp    <- dim(fit$mu)[2]
-  nbr.vert  <- length(mesh)
-  nbr.quant <- length(levels)+2
-  chi <- matrix(0, nrow=nbr.vert, ncol=nbr.quant)
+  n_comp    <- dim(fit$mu)[2]
+  nbr_vert  <- length(mesh)
+  nbr_quant <- length(levels)+2
+  chi <- matrix(0, nrow=nbr_vert, ncol=nbr_quant)
   dimnames(chi) <- list(NULL,c("mean","median",paste(levels*100,"%",sep="")))
   subfit <- bayesfit()
   subfit$a <- fit$a[,nlag, drop=FALSE]
@@ -267,26 +359,33 @@ chifit <- function(ts, lapl=FALSE, nlag=1, R=1000, S=500,
   subfit$mean <- fit$mean[,,nlag, drop=FALSE]
   subfit$w   <- fit$w
   subfit$len <- fit$len
-  fit.sample <- etfit(data=data.up[,c(1,nlag+1)], R=R, S=S, probs=mesh, method=method,
-                      silent=silent,
-                      fit=FALSE, prev.fit=subfit, submodel=submodel, levels=levels)
+  fit_sample <- etfit(data = data_up[,c(1,nlag+1)],
+                      R = R,
+                      S = S,
+                      probs = mesh,
+                      method=method,
+                      silent = silent,
+                      fit = FALSE,
+                      prev_fit = subfit,
+                      submodel = submodel,
+                      levels = levels)
   # compute chi_j(x) = Pr(X_j>x | X_1>x)
-  chi[,"mean"]   <- 1-fit.sample$theta[,"mean"]
-  chi[,"median"] <- 1-fit.sample$theta[,"median"]
-  if(nbr.quant>2){
-    chi[,3:nbr.quant] <- t(vapply(seq_along(probs), function(i){
-      quantile(1-fit.sample$distr[i,], probs=levels)
+  chi[,"mean"]   <- 1-fit_sample$theta[,"mean"]
+  chi[,"median"] <- 1-fit_sample$theta[,"median"]
+  if (nbr_quant>2) {
+    chi[,3:nbr_quant] <- t(vapply(seq_along(probs), function(i) {
+      quantile(1-fit_sample$distr[i,], probs=levels)
     }, levels))
   }
-  distr <- 1-fit.sample$distr
+  distr <- 1-fit_sample$distr
   ret$chi   <- chi
   ret$distr <- distr
   ## print time
   time <- toc(silent=TRUE)
-  if(!silent){
+  if (!silent) {
     print(paste("Time elapsed on estimating chi: ",
                 time%/%60," min ",round(time-60*(time%/%60), 1)," sec.", sep=""))
-    print(paste("Time per x-value: ",round(time/nbr.vert, 1)," sec.", sep=""))
+    print(paste("Time per x-value: ",round(time/nbr_vert, 1)," sec.", sep=""))
   }
   return(ret)
 }

@@ -4,14 +4,14 @@
 \alias{th2est}
 \title{Estimate the extremal index from a Heffernan--Tawn model fit}
 \usage{
-th2est(fit, sim.U, sim.Z, mesh, nlag, method)
+th2est(fit, sim_U, sim_Z, mesh, nlag, method)
 }
 \arguments{
 \item{fit}{output from \code{\link[=ht2step]{ht2step()}}, an object of class \code{\link[=stepfit]{stepfit()}}.}
 
-\item{sim.U}{vector of reals, \code{R} uniform samples (see \code{\link[=ht2step]{ht2step()}}).}
+\item{sim_U}{vector of reals, \code{R} uniform samples (see \code{\link[=ht2step]{ht2step()}}).}
 
-\item{sim.Z}{matrix of reals, \code{R} multivariate samples from the
+\item{sim_Z}{matrix of reals, \code{R} multivariate samples from the
 Heffernan--Tawn residual distribution.}
 
 \item{mesh}{vector of reals, quantile values at which to evaluate

@@ -25,7 +25,7 @@ void et_interface(double* data,
                    int* adapt, int* batchsize,
                    double* sd_propa, double* sd_propb,
                    double* mu_prior, double* nu_prior, double* eta_prior,
-                   int* mode, int* spec,
+                   int* cstr, int* mode, int* spec,
                    double* t_a, double* t_b, double* t_sig, double* t_mu,
                    double* t_w, double* t_gam,
                    int* t_ci, int* t_noo, int* t_noc, double* t_sd);

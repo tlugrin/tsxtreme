@@ -2,9 +2,9 @@
 ## Gathering functions from old files into one reference file
 ## (Scope:) Heffernan-Tawn model fit in 2 stages
 ## List of functions: - ht2fit
-##                    - nllh.ht
-##                    - grad.ht
-##                    - ht2step.2d
+##                    - nllh_ht
+##                    - grad_ht
+##                    - ht2step_2d
 ##                    - ht2step
 ##################################################
 
@@ -29,13 +29,17 @@
 #' the domain in which \eqn{(\alpha,\beta)} live.
 #' 
 #' @param ts numeric vector; time series to be fitted.
-#' @param u.mar marginal threshold; used when transforming the time series to
+#' @param u.mar `r lifecycle::badge('deprecated')` use `u_mar` instead.
+#' @param u_mar marginal threshold; used when transforming the time series to
 #'   Laplace scale.
-#' @param u.dep dependence threshold; level above which the dependence is
-#'   modelled. \code{u.dep} can be lower than \code{u.mar}.
+#' @param u.dep `r lifecycle::badge('deprecated')` use `u_dep` instead.
+#' @param u_dep dependence threshold; level above which the dependence is
+#'   modelled. `u_dep` can be lower than `u_mar`.
 #' @param lapl logical; is \code{ts} on the Laplace scale already? The default
 #'   (FALSE) assumes unknown marginal distribution.
-#' @param method.mar a character string defining the method used to estimate the
+#' @param method.mar `r lifecycle::badge('deprecated')` use `method_mar`
+#'   instead.
+#' @param method_mar a character string defining the method used to estimate the
 #'   marginal GPD; either \code{"mle"} for maximum likelihood of \code{"mom"}
 #'   for method of moments. Defaults to \code{"mle"}.
 #' @param nlag integer; number of lags to be considered when modelling the
@@ -62,18 +66,40 @@
 #' ar <- qlapl(pnorm(ar))
 #' 
 #' ## fit model without constraints...
-#' fit1 <- dep2fit(ts=ar, u.mar = 0.95, u.dep=0.98, conditions=FALSE)
+#' fit1 <- dep2fit(ts=ar, u_mar = 0.95, u_dep=0.98, conditions=FALSE)
 #' fit1$a; fit1$b
 #' 
 #' ## ...and compare with a fit with constraints
-#' fit2 <- dep2fit(ts=ar, u.mar = 0.95, u.dep=0.98, conditions=TRUE)
+#' fit2 <- dep2fit(ts=ar, u_mar = 0.95, u_dep=0.98, conditions=TRUE)
 #' fit2$a; fit2$b# should be similar, as true parameters lie well within the constraints
 #' 
 #' @export
-dep2fit <- function(ts, u.mar=0, u.dep, lapl=FALSE, method.mar=c("mle","mom","pwm"), nlag=1, conditions=TRUE){
-  data.up <- format.ts(ts=ts, u.mar=u.mar, u.dep=u.dep, method=method.mar,
-                       lapl=lapl, nlag=nlag)
-  ht2step(data=data.up, conditions=conditions)
+dep2fit <- function(ts,
+                    u_mar = 0,
+                    u_dep,
+                    lapl = FALSE,
+                    method_mar = c("mle","mom","pwm"),
+                    nlag = 1,
+                    conditions = TRUE,
+                    u.mar = deprecated(),
+                    u.dep = deprecated(),
+                    method.mar = deprecated()) {
+  if (lifecycle::is_present(u.mar)) {
+    lifecycle::deprecate_warn("0.4.0", "dep2fit(u.mar)", "dep2fit(u_mar)")
+    u_mar <- u.mar
+  }
+  if (lifecycle::is_present(u.dep)) {
+    lifecycle::deprecate_warn("0.4.0", "dep2fit(u.dep)", "dep2fit(u_dep)")
+    u_dep <- u.dep
+  }
+  if (lifecycle::is_present(method.mar)) {
+    lifecycle::deprecate_warn("0.4.0", "dep2fit(method.mar)",
+                              "dep2fit(method_mar)")
+    method_mar <- method.mar
+  }
+  data_up <- format_ts(ts = ts, u_mar = u_mar, u_dep = u_dep,
+                       method = method_mar, lapl = lapl, nlag = nlag)
+  ht2step(data = data_up, conditions = conditions)
 }
 
 ##################################################
@@ -81,20 +107,20 @@ dep2fit <- function(ts, u.mar=0, u.dep, lapl=FALSE, method.mar=c("mle","mom","pw
 
 #' Negative log-likelihood for the Heffernan--Tawn model
 #' 
-#' Called by [ht2step.2d()]
+#' Called by [ht2step_2d()]
 #' 
 #' @param par vector of reals, alpha-beta-mu-sigma^2
 #' @param data 2-column matrix, first column is X>u - second column is Y|X>u
 #' @param conditions boolean, TRUE means alpha and beta must satisfy AD/AI constraints
 #' @returns scalar, value of the negative log-likelihood of H+T
 #' @keywords internal
-nllh.ht <- function(par,data,conditions){
-  if(par[4] <= 0){ return(Inf) }
-  if(conditions){
-    if(!conditions.verify(par[1], par[2], 0, data=data) ||
-         !conditions.verify(par[1], par[2], 1, data=data)){ return(Inf) }
-  }else{
-    if(par[1]< -1 || par[1]>1 || par[2]<0 || par[2]>1){ return(Inf) }
+nllh_ht <- function(par,data,conditions) {
+  if (par[4] <= 0) { return(Inf) }
+  if (conditions) {
+    if (!conditions_verify(par[1], par[2], 0, data=data) ||
+         !conditions_verify(par[1], par[2], 1, data=data)) { return(Inf) }
+  } else {
+    if (par[1]< -1 || par[1]>1 || par[2]<0 || par[2]>1) { return(Inf) }
   }
   sigma <- par[4]*data[,1]^(2*par[2])
   mu    <- par[1]*data[,1] + par[3]*data[,1]^par[2]
@@ -102,19 +128,19 @@ nllh.ht <- function(par,data,conditions){
 }
 
 
-#' @rdname nllh.ht
+#' @rdname nllh_ht
 #' @keywords internal
-grad.ht <- function(par,data,conditions){
+grad_ht <- function(par,data,conditions) {
   sig <- par[4]*data[,1]^(2*par[2])
   mu  <- par[1]*data[,1] + par[3]*data[,1]^par[2]
   cen <- data[,2]-mu
   
-  d.a <- -2*sum(cen*data[,1]/sig)
-  d.b <- 2*sum(log(data[,1]) * (1 - cen*(par[3]*data[,1]^par[2]+cen)/sig))
-  d.m <- -2*sum(cen/(data[,1]^(par[2])*par[4]))
-  d.s <- sum((1-cen^2/sig)/par[4])
+  d_a <- -2*sum(cen*data[,1]/sig)
+  d_b <- 2*sum(log(data[,1]) * (1 - cen*(par[3]*data[,1]^par[2]+cen)/sig))
+  d_m <- -2*sum(cen/(data[,1]^(par[2])*par[4]))
+  d_s <- sum((1-cen^2/sig)/par[4])
   
-  return(c(d.a,d.b,d.m,d.s))
+  return(c(d_a,d_b,d_m,d_s))
 }
 
 
@@ -130,23 +156,23 @@ grad.ht <- function(par,data,conditions){
 #' @param conditions boolean, TRUE means alpha and beta must satisfy AD/AI constraints
 #' @returns list, MLE for alpha - beta - z hat - standard deviations of alpha and beta
 #' @keywords internal
-ht2step.2d <- function(data, conditions=TRUE){
+ht2step_2d <- function(data, conditions = TRUE) {
   ret <- stepfit()
-  if(conditions){
-    bds <- conditions.bounds(0,FALSE,data)
-    a   <- runif(1,bds[1],bds[2])
-    bds <- conditions.bounds(a,TRUE,data)
-    b   <- runif(1,bds[1],bds[2])
-  }else{
-    a <- runif(1, -1, 1)
-    b <- runif(1, 0, 1)
+  if (conditions) {
+    bds <- conditions_bounds(0,FALSE,data)
+    a   <- runif (1,bds[1],bds[2])
+    bds <- conditions_bounds(a,TRUE,data)
+    b   <- runif (1,bds[1],bds[2])
+  } else {
+    a <- runif (1, -1, 1)
+    b <- runif (1, 0, 1)
   }
-  res <- optim(par=c(a,b,0,1), fn=nllh.ht, gr=grad.ht, data=data, conditions=conditions,
-                hessian=TRUE, method="BFGS")
+  res <- optim(par = c(a,b,0,1), fn = nllh_ht, gr = grad_ht, data = data,
+               conditions = conditions, hessian = TRUE, method = "BFGS")
   ret$a <- res$par[1]
   ret$b <- res$par[2]
   ret$res <- (data[,2] - data[,1]*ret$a)/data[,1]^ret$b
-  ret$pars.se <- sqrt(diag(solve(res$hessian))[1:2])
+  ret$pars_se <- sqrt(diag(solve(res$hessian))[1:2])
   return(ret)
 }
 
@@ -159,20 +185,21 @@ ht2step.2d <- function(data, conditions=TRUE){
 #' @param conditions boolean, TRUE means alpha and beta must satisfy AD/AI constraints
 #' @returns An object of class [stepfit()].
 #' @keywords internal
-ht2step <- function(data, conditions=TRUE){
+ht2step <- function(data, conditions = TRUE) {
   n       <- dim(data)[1]
   d       <- dim(data)[2]
   ret   <- stepfit()
   ret$a <- ret$b <- numeric(d-1)
-  ret$res     <- matrix(0, nrow=n, ncol=d-1, dimnames=list(NULL, paste("Z",1:(d-1), sep="")))
-  ret$pars.se <- matrix(NA, nrow=2, ncol=d-1)
+  ret$res     <- matrix(0, nrow = n, ncol = d-1,
+                        dimnames = list(NULL, paste("Z",1:(d-1), sep = "")))
+  ret$pars_se <- matrix(NA, nrow = 2, ncol = d-1)
   ret$nlag    <- d-1
-  for(i in 2:d){
-    fit           <- ht2step.2d(data[,c(1,i)], conditions)
+  for(i in 2:d) {
+    fit           <- ht2step_2d(data[,c(1,i)], conditions)
     ret$a[i-1]    <- fit$a
     ret$b[i-1]    <- fit$b
     ret$res[,i-1]     <- fit$res
-    ret$pars.se[,i-1] <- fit$pars.se
+    ret$pars_se[,i-1] <- fit$pars_se
   }
   return(ret)
 }

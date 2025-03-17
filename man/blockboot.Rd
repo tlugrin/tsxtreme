@@ -4,10 +4,10 @@
 \alias{blockboot}
 \title{Basis method to block bootstrap a time series}
 \usage{
-blockboot(ts, block.length, R)
+blockboot(ts, block_length, R)
 }
 \arguments{
-\item{block.length}{integer>0, length of blocks in block-bootstrap.}
+\item{block_length}{integer>0, length of blocks in block-bootstrap.}
 
 \item{R}{integer>0, number of bootstrap samples to compute the confidence
 intervals.}

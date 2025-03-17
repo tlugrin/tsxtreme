@@ -16,7 +16,8 @@ stepfit()
 An object of class "stepfit" with the following elements:
 \item{a, b }{Heffernan--Tawn model parameters of length \code{nlag}; \eqn{\alpha} controls the conditional extremal expectation, while \eqn{\beta} controls the conditional extremal expectation and variance.}
 \item{res }{matrix of fitted residuals with \code{nlag} columns.}
-\item{pars.se }{2-column matrix of estimated standard errors for \code{a} (first column) and \code{b} (second column), given by the hessian matrix of the likelihood function used in the first step of the inference procedure.}
+\item{pars.se} \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} use \code{pars_se} instead.
+\item{pars_se }{2-column matrix of estimated standard errors for \code{a} (first column) and \code{b} (second column), given by the hessian matrix of the likelihood function used in the first step of the inference procedure.}
 \item{nlag }{number of lags.}
 }
 \description{

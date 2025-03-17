@@ -32,7 +32,7 @@ If \code{type} is "steptheta",
 
 If \code{type} is "runs",
 \item{theta }{a matrix with the (empirical) runs estimator estimate and confidence intervals (columns) at the given \code{levels} (rows).}
-\item{nbr.exc }{the number of exceedances corresponding to the \code{levels}.}
+\item{nbr_exc }{the number of exceedances corresponding to the \code{levels}.}
 }
 \description{
 Test or show objects of class "depmeasure", a structure for all dependence

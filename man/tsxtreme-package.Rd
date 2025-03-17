@@ -18,44 +18,52 @@ threshold \eqn{u} there exist scale parameters \eqn{-1 \le\alpha_j\le 1} and
 with \eqn{H} non-degenerate; the equality holds exactly only when \eqn{u}
 tends to infinity.
 
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} As of version 0.4.0, all arguments that
+included a \code{.} to separate a compound name were renamed to use
+\strong{snake_case}, i.e., a \verb{_} instead. For example, the elements of a
+\code{bayesparams} object are now \code{prop_a}, \code{prop_b} and so on. The older notation
+is still accepted in this version and you will see deprecation warnings; a
+later version shall not accept the dot-notation anymore.
+
 There are mainly 3 functions provided by this package, which allow estimation
 of extremal dependence measures and fitting the Heffernan--Tawn model using
 Dirichlet processes.
 
-\code{\link{depfit}} fits the Heffernan--Tawn model using a Bayesian
+\code{\link[=depfit]{depfit()}} fits the Heffernan--Tawn model using a Bayesian
 semi-parametric approach.
 
-\code{\link{thetafit}} computes posterior samples of the threshold-based
-index of Ledford and Tawn (2003) based on inference in \code{\link{depfit}}.
+\code{\link[=thetafit]{thetafit()}} computes posterior samples of the threshold-based
+index of Ledford and Tawn (2003) based on inference in \code{\link[=depfit]{depfit()}}.
 
-\code{\link{chifit}} computes posterior samples of the extremal measure of
+\code{\link[=chifit]{chifit()}} computes posterior samples of the extremal measure of
 dependence of Coles, Heffernan and Tawn (1999) at any extremal level.
 
 Some corresponding functions using the stepwise approach of
 Heffernan and Tawn (2004) are also part of the package, namely
-\code{\link{dep2fit}} and \code{\link{theta2fit}}.
+\code{\link[=dep2fit]{dep2fit()}} and \code{\link[=theta2fit]{theta2fit()}}.
 
 The empirical estimation of the extremal index can be done using
-\code{\link{thetaruns}} and some basic functions handling the Laplace
-distribution are also available in \code{\link{dlapl}}.
+\code{\link[=thetaruns]{thetaruns()}} and some basic functions handling the Laplace
+distribution are also available in \code{\link[=dlapl]{dlapl()}}.
 }
 \references{
-Coles, S., Heffernan, J. E. and Tawn, J. A. (1999) Dependence measures for extreme value analyses. \emph{Extremes}, \bold{2}, 339--365.
+Coles, S., Heffernan, J. E. and Tawn, J. A. (1999) Dependence measures for
+extreme value analyses. \emph{Extremes}, \strong{2}, 339--365.
 
 Davison, A. C. and Smith, R. L. (1990) Models for exceedances over high
 thresholds. \emph{Journal of the Royal Statistical Society Series B},
-\bold{52}, 393--442.
+\strong{52}, 393--442.
 
 Heffernan, J. E. and Tawn, J. A. (2004) A conditional approach for
 multivariate extreme values.
-\emph{Journal of the Royal Statistical Society Series B}, \bold{66}, 497--546.
+\emph{Journal of the Royal Statistical Society Series B}, \strong{66}, 497--546.
 
 Ledford, W. A. and Tawn, J. A. (2003) Diagnostics for dependence within
 time series extremes. \emph{Journal of the Royal Statistical Society Series B},
-\bold{65}, 521--543.
+\strong{65}, 521--543.
 
 Lugrin, T., Davison, A. C. and Tawn, J. A. (2016) Bayesian uncertainty
-management in temporal dependence of extremes. \emph{Extremes}, \bold{19}, 491--515.
+management in temporal dependence of extremes. \emph{Extremes}, \strong{19}, 491--515.
 }
 \seealso{
 \code{\link[=thetafit]{thetafit()}}, \code{\link[=chifit]{chifit()}}, \code{\link[=depfit]{depfit()}}

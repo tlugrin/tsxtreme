@@ -5,66 +5,104 @@
 \title{Parameters for the Bayesian semi-parametric approach}
 \usage{
 bayesparams(
-  prop.a = 0.02,
-  prop.b = 0.02,
-  prior.mu = c(0, 10),
-  prior.nu = c(2, 1/2),
-  prior.eta = c(2, 2),
+  prop_a = 0.02,
+  prop_b = 0.02,
+  prior_mu = c(0, 10),
+  prior_nu = c(2, 1/2),
+  prior_eta = c(2, 2),
   trunc = 100,
-  comp.saved = 15,
+  comp_saved = 15,
   maxit = 30000,
   burn = 5000,
   thin = 1,
   adapt = 5000,
-  batch.size = 125,
-  start.ab = c("guesstimate", "prior"),
-  mode = 1
+  batch_size = 125,
+  start_ab = c("guesstimate", "prior"),
+  mode = 1,
+  prop.a = deprecated(),
+  prop.b = deprecated(),
+  prior.mu = deprecated(),
+  prior.nu = deprecated(),
+  prior.eta = deprecated(),
+  comp.saved = deprecated(),
+  batch.size = deprecated()
 )
 }
 \arguments{
+\item{prop_a, prop_b}{standard deviation for the Gaussian proposal
+distributions of the Heffernan--Tawn model parameters; see also Details.}
+
+\item{prior_mu}{mean and standard deviation parameters for the Gaussian prior
+distribution of the components' means.}
+
+\item{prior_nu}{shape and rate parameters for the inverse gamma prior
+distribution of the components' variances.}
+
+\item{prior_eta}{shape and scale parameters for the gamma prior distribution
+of the precision parameter used in the Dirichlet process.}
+
+\item{trunc}{integer; truncation parameter for approximating the infinite sum
+in the stick-breaking process.}
+
+\item{comp_saved}{number of components to be stored and returned.}
+
+\item{maxit}{total number of iterations to perform (fewer are saved based on
+\code{burn} and \code{thin}).}
+
+\item{burn}{number of first iterations to discard.}
+
+\item{thin}{spacing between iterations to be saved. Defaults to 1, i.e., all
+iterations are saved.}
+
+\item{adapt}{number of iterations during which an adaptive scheme (RAMA:
+Regional Adaptive Monte-Carlo Algorithm) is applied to the proposal
+variances of \eqn{\alpha} and \eqn{\beta}; 0 means no adaption.}
+
+\item{batch_size}{size of batches used in the adaption algorithm. It has no effect if \code{adapt==0}.}
+
+\item{start_ab}{either "guesstimate" to initialise start values for alpha and
+beta from a stepwise fit or "prior" to use random draws from their
+respective prior distributions.}
+
+\item{mode}{verbosity; 0 for debug mode, 1 (default) for standard output,
+and 2 for silent.}
+
 \item{x}{an arbitrary \R object.}
 }
 \value{
-An object of class "bayesparams" with the following elements:
-\item{prop.a, prop.b }{standard deviation for the Gaussian proposal distributions of the Heffernan--Tawn model parameters; see also Details.}
-\item{prior.mu }{mean and standard deviation parameters for the Gaussian prior distribution of the components' means.}
-\item{prior.nu }{shape and rate parameters for the inverse gamma prior
-distribution of the components' variances.}
-\item{prior.eta }{shape and scale parameters for the gamma prior distribution
-of the precision parameter used in the Dirichlet process.}
-\item{trunc }{integer; truncation parameter for approximating the infinite sum in the stick-breaking process.}
-\item{comp.saved }{number of components to be stored and returned.}
-\item{maxit }{total number of iterations to perform (fewer are saved based on \code{burn} and \code{thin}).}
-\item{burn }{number of first iterations to discard.}
-\item{thin }{spacing between iterations to be saved. Defaults to 1, i.e., all iterations are saved.}
-\item{adapt }{number of iterations during which an adaptive scheme (RAMA: Regional Adaptive Monte-Carlo Algorithm) is applied to the proposal variances of \eqn{\alpha} and \eqn{\beta}; 0 means no adaption.}
-\item{batch.size }{size of batches used in the adaption algorithm. It has no effect if \code{adapt==0}.}
-\item{start.ab }{either "guesstimate" to initialise start values for alpha and beta from a stepwise fit or "prior" to use random draws from their respective prior distributions.}
-\item{mode }{verbosity; 0 for debug mode, 1 (default) for standard output, and 2 for silent.}
+An object of class "bayesparams".
 }
 \description{
 Create, test or show objects of class "bayesparams". Objects of this class
 are used as a meta-parameter for the methods fitting the Bayesian approach.
 }
 \details{
-\code{prop.a} is a vector of length 5 with the standard deviations for each region of the RAMA for the (Gaussian) proposal for \eqn{\alpha}. If a scalar is given, 5 identical values are assumed.
+\code{prop_a} is a vector of length 5 with the standard deviations for each
+region of the RAMA for the (Gaussian) proposal for \eqn{\alpha}. If a scalar
+is given, 5 identical values are assumed.
 
-\code{prop.b} is a vector of length 3 with the standard deviations for each
+\code{prop_b} is a vector of length 3 with the standard deviations for each
 region of the RAMA for the (Gaussian) proposal for \eqn{\beta}. If a scalar
 is provided, 3 identical values are assumed.
 
-\code{comp.saved} has no impact on the calculations: its only purpose is to
+\code{comp_saved} has no impact on the calculations: its only purpose is to
 prevent from storing huge amounts of empty components.
 
 The regional adaption scheme targets a \eqn{0.44} acceptance probability. It
 splits \eqn{[-1;1]} in \eqn{5} regions for \eqn{\alpha} and \eqn{[0;1]} in
 \eqn{3} regions for \eqn{\beta}. The decision to increase/decrease the
-proposal standard deviation is based on the past \code{batch.size} MCMC
+proposal standard deviation is based on the past \code{batch_size} MCMC
 iterations, so too low values yield inefficient adaption, while too large
 values yield slow adaption.
 
 Default values for the hyperparameters are chosen to get reasonably
 uninformative priors.
+
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} The \strong{dot-notation} for elements of
+the "bayesparams" object is deprecated in favour of the \strong{snake-notation}.
+For example, \code{prop.a} is now \code{prop_a}, \code{prior.mu} is now \code{prior_mu},
+and so on. The dot-notation elements will be removed in a subsequent version
+of the package.
 }
 \examples{
 is.bayesparams(bayesparams()) # TRUE

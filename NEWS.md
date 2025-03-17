@@ -1,11 +1,13 @@
 # tsxtreme 0.4.0
 
 * add option to set starting values for alpha and beta
+* TODO: add option not to enforce constraints on alpha and beta in the Bayesian fit
+* add a few methods to the user interface
 * fix bug in the computation of the Monte-Carlo integration
 * migrate documentation to roxygen
-* update documentation throughout package
-* TODO: update code to conform to modern R conventions
-* TODO: deprecate dot-notation methods
+* update documentation throughout the package
+* update code to conform to modern R conventions
+* deprecate dot-notation methods and arguments
 
 # version 0.3.4
 

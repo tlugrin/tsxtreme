@@ -1,16 +1,16 @@
 ## Copyright (C) 2017-2025 Thomas Lugrin
 ## Functions related to H+T model
 ## (Scope:) Heffernan-Tawn model fit in 1 stage
-## List of functions: - p.res
-##                    - r.res
+## List of functions: - p_res
+##                    - r_res
 ##################################################
 
 #' The conditional tail model residual distribution (Bayesian)
 #' 
 #' Distribution function and random generation for the residual distribution of
 #' the Heffernan--Tawn conditional tail model. Intended for the Bayesian
-#' semiparametric approach. The `p.res` method is called by
-#' [etfit()] for Monte-Carlo integration, the `r.res` method is called by
+#' semiparametric approach. The `p_res` method is called by
+#' [etfit()] for Monte-Carlo integration, the `r_res` method is called by
 #' [etfit()] for the proportion method. Not exposed to the user.
 #' 
 #' @param s integer, ranges across sweeps.
@@ -24,16 +24,17 @@
 #'   a given iteration.
 #' @param S integer>0, number of posterior iterations used for the estimation.
 #' @param nlag integer>0, number of lags in the original data.
-#' @returns For `p.res`: a matrix of reals, evaluation of the Heffernan--Tawn
-#'   residual distribution function. For `r.res`: a matrix of reals, samples
+#' @returns For `p_res`: a matrix of reals, evaluation of the Heffernan--Tawn
+#'   residual distribution function. For `r_res`: a matrix of reals, samples
 #'   of the residual distribution across a sample of iterations.
 #' @keywords internal
-p.res <- function(s, z, w, mu, sig){
-  R   <- dim(z)[1]; nlag = dim(z)[3]
+p_res <- function(s, z, w, mu, sig){
+  R   <- dim(z)[1]
+  nlag <- dim(z)[3]
   ret <- numeric(R)
   for(r in 1:R){
     prev <- 1
-    for(lag in 1:nlag){
+    for (lag in 1:nlag) {
       prev <- prev*sum(w[s,]*pnorm(z[r,s,lag], mu[s,,lag], sig[s,,lag]))
     }
     ret[r] <- prev
@@ -41,27 +42,27 @@ p.res <- function(s, z, w, mu, sig){
   return(ret)
 }
 
-#' @rdname p.res
-r.res <- function(R, S, nlag, w, mu, sig){
-  sim.Z <- array(0, dim=c(R,S,nlag))
+#' @rdname p_res
+r_res <- function(R, S, nlag, w, mu, sig){
+  sim_Z <- array(0, dim = c(R,S,nlag))
   
-  for(sw in 1:S){# loop on selected sweeps
+  for (sw in 1:S) {# loop on selected sweeps
     hwmany <- rmultinom(1, R, w[sw,])
     r      <- 1
     c      <- 1
-    
-    while(r<R){# sample from mixture
-      if(hwmany[c]>0){
-        if(dim(s)[3]==1){
-          sim.Z[r:(r+hwmany[c]-1),sw,] <- rnorm(hwmany[c], m[sw,c,], s[sw,c,])
-        }else{
-          sim.Z[r:(r+hwmany[c]-1),sw,] <- rmvnorm(hwmany[c], m[sw,c,], diag(s[sw,c,]^2))
+    while (r<R) {# sample from mixture
+      if (hwmany[c]>0) {
+        if (dim(s)[3]==1) {
+          sim_Z[r:(r+hwmany[c]-1),sw,] <- rnorm(hwmany[c], m[sw,c,], s[sw,c,])
+        } else {
+          sim_Z[r:(r+hwmany[c]-1),sw,] <- rmvnorm(hwmany[c], m[sw,c,],
+                                                  diag(s[sw,c,]^2))
         }
       }
       r <- r+hwmany[c]
       c <- c+1
     }
   }
-  sim.Z <- matrix(sim.Z, nrow=R, ncol=S*nlag)
-  return(sim.Z)
+  sim_Z <- matrix(sim_Z, nrow = R, ncol = S*nlag)
+  return(sim_Z)
 }

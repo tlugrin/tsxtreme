@@ -6,27 +6,30 @@
 \usage{
 dep2fit(
   ts,
-  u.mar = 0,
-  u.dep,
+  u_mar = 0,
+  u_dep,
   lapl = FALSE,
-  method.mar = c("mle", "mom", "pwm"),
+  method_mar = c("mle", "mom", "pwm"),
   nlag = 1,
-  conditions = TRUE
+  conditions = TRUE,
+  u.mar = deprecated(),
+  u.dep = deprecated(),
+  method.mar = deprecated()
 )
 }
 \arguments{
 \item{ts}{numeric vector; time series to be fitted.}
 
-\item{u.mar}{marginal threshold; used when transforming the time series to
+\item{u_mar}{marginal threshold; used when transforming the time series to
 Laplace scale.}
 
-\item{u.dep}{dependence threshold; level above which the dependence is
-modelled. \code{u.dep} can be lower than \code{u.mar}.}
+\item{u_dep}{dependence threshold; level above which the dependence is
+modelled. \code{u_dep} can be lower than \code{u_mar}.}
 
 \item{lapl}{logical; is \code{ts} on the Laplace scale already? The default
 (FALSE) assumes unknown marginal distribution.}
 
-\item{method.mar}{a character string defining the method used to estimate the
+\item{method_mar}{a character string defining the method used to estimate the
 marginal GPD; either \code{"mle"} for maximum likelihood of \code{"mom"}
 for method of moments. Defaults to \code{"mle"}.}
 
@@ -35,6 +38,13 @@ dependence in time.}
 
 \item{conditions}{logical; should conditions on \eqn{\alpha} and \eqn{\beta}
 be set? (see Details) Defaults to \code{TRUE}.}
+
+\item{u.mar}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} use \code{u_mar} instead.}
+
+\item{u.dep}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} use \code{u_dep} instead.}
+
+\item{method.mar}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} use \code{method_mar}
+instead.}
 }
 \value{
 An object of class \code{\link[=stepfit]{stepfit()}}.
@@ -76,11 +86,11 @@ lines(grid, dnorm(grid), col="blue")
 ar <- qlapl(pnorm(ar))
 
 ## fit model without constraints...
-fit1 <- dep2fit(ts=ar, u.mar = 0.95, u.dep=0.98, conditions=FALSE)
+fit1 <- dep2fit(ts=ar, u_mar = 0.95, u_dep=0.98, conditions=FALSE)
 fit1$a; fit1$b
 
 ## ...and compare with a fit with constraints
-fit2 <- dep2fit(ts=ar, u.mar = 0.95, u.dep=0.98, conditions=TRUE)
+fit2 <- dep2fit(ts=ar, u_mar = 0.95, u_dep=0.98, conditions=TRUE)
 fit2$a; fit2$b# should be similar, as true parameters lie well within the constraints
 
 }

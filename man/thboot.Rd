@@ -4,12 +4,12 @@
 \alias{thboot}
 \title{Bootstrap confidence interval for the extremal index}
 \usage{
-thboot(par, block.length, R, method, levels)
+thboot(par, block_length, R, method, levels)
 }
 \arguments{
 \item{par}{list, arguments to feed \code{\link[=theta2fit]{theta2fit()}}.}
 
-\item{block.length}{integer>0, length of blocks in block-bootstrap.}
+\item{block_length}{integer>0, length of blocks in block-bootstrap.}
 
 \item{R}{integer>0, number of bootstrap samples to compute the confidence
 intervals.}

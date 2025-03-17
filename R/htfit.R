@@ -21,13 +21,17 @@
 #' \eqn{\alpha=\beta=0} (see examples).#' 
 #' 
 #' @param ts numeric vector; time series to be fitted.
-#' @param u.mar marginal threshold; used when transforming the time series to
+#' @param u.mar `r lifecycle::badge('deprecated')` use `u_mar` instead.
+#' @param u_mar marginal threshold; used when transforming the time series to
 #'   the Laplace scale.
-#' @param u.dep dependence threshold; level above which the dependence is
-#'   modelled. \code{u.dep} can be lower than \code{u.mar}.
+#' @param u.dep `r lifecycle::badge('deprecated')` use `u_dep` instead.
+#' @param u_dep dependence threshold; level above which the dependence is
+#'   modelled. `u_dep` can be lower than `u_mar`.
 #' @param lapl logical; is \code{ts} on the Laplace scale already? The default
 #'   (FALSE) assumes unknown marginal distribution.
-#' @param method.mar a character string defining the method used to estimate the
+#' @param method.mar `r lifecycle::badge('deprecated')` use `method_mar`
+#'   instead.
+#' @param method_mar a character string defining the method used to estimate the
 #'   marginal GPD; either \code{"mle"} for maximum likelihood or \code{"mom"}
 #'   for method of moments or \code{"pwm"} for probability weighted moments.
 #'   Defaults to \code{"mle"}.
@@ -57,29 +61,61 @@
 #' params$maxit <- 100# bigger numbers would be
 #' params$burn  <- 10 # more sensible...
 #' params$thin  <- 4
-#' fit <- depfit(ts=ar, u.mar=0.95, u.dep=0.98, par=params)
+#' fit <- depfit(ts=ar, u_mar=0.95, u_dep=0.98, par=params)
 #'
 #' ########
 #' ## density estimation with submodel=="ugm"
 #' data <- MASS::galaxies/1e3
 #' dens <- depfit(ts=data, par=params, submodel="ugm")
 #' @export
-depfit <- function(ts, u.mar=0, u.dep=u.mar, lapl=FALSE, method.mar=c("mle","mom","pwm"), nlag=1,
-                   par=bayesparams(), submodel=c("fom","none","ugm")){
-  if(submodel[1]=="ugm"){
-    data.up <- cbind(1,ts)
-  }else if(submodel[1] %in% c("fom","none")){
-    data.up <- format.ts(ts=ts, u.mar=u.mar, u.dep=u.dep, method=method.mar,
-                         nlag=nlag, lapl=lapl)
-  }else{
-    stop(paste("submodel",submodel,"unknown in depfit()"))
+depfit <- function(ts,
+                   u_mar = 0,
+                   u_dep = u_mar,
+                   lapl = FALSE,
+                   method_mar = c("mle","mom","pwm"),
+                   nlag = 1,
+                   par = bayesparams(),
+                   submodel = c("fom","none","ugm"),
+                   u.mar = deprecated(),
+                   u.dep = deprecated(),
+                   method.mar = deprecated()) {
+  if (lifecycle::is_present(u.mar)) {
+    lifecycle::deprecate_warn("0.4.0", "depfit(u.mar)", "depfit(u_mar)")
+    u_mar <- u.mar
   }
-  htfit(data=data.up, prop.a=par$prop.a, prop.b=par$prop.b,
-        prior.mu=par$prior.mu, prior.nu=par$prior.nu, prior.eta=par$prior.eta,
-        trunc=par$trunc, comp.saved=par$comp.saved,
-        maxit=par$maxit, burn=par$burn, thin=par$thin,
-        adapt=par$adapt, batch.size=par$batch.size, start.ab=par$start.ab,
-        mode=par$mode, submodel=submodel)
+  if (lifecycle::is_present(u.dep)) {
+    lifecycle::deprecate_warn("0.4.0", "depfit(u.dep)", "depfit(u_dep)")
+    u_dep <- u.dep
+  }
+  if (lifecycle::is_present(method.mar)) {
+    lifecycle::deprecate_warn("0.4.0", "depfit(method.mar)",
+                              "depfit(method_mar)")
+    method_mar <- method.mar
+  }
+  if (submodel[1]=="ugm") {
+    data_up <- cbind(1,ts)
+  } else if (submodel[1] %in% c("fom","none")) {
+    data_up <- format_ts(ts = ts, u_mar = u_mar, u_dep = u_dep,
+                         method = method_mar, nlag = nlag, lapl = lapl)
+  } else {
+    stop(paste("submodel", submodel, "unknown in depfit()"))
+  }
+  htfit(data = data_up,
+        prop_a = par$prop_a,
+        prop_b = par$prop_b,
+        prior_mu = par$prior_mu,
+        prior_nu = par$prior_nu,
+        prior_eta = par$prior_eta,
+        trunc = par$trunc,
+        comp_saved = par$comp_saved,
+        maxit = par$maxit,
+        burn = par$burn,
+        thin = par$thin,
+        adapt = par$adapt,
+        batch_size = par$batch_size,
+        start_ab = par$start_ab,
+        mode = par$mode,
+        submodel = submodel)
 }
 
 #' Raw method for the semiparametric Bayesian fit
@@ -94,69 +130,97 @@ depfit <- function(ts, u.mar=0, u.dep=u.mar, lapl=FALSE, method.mar=c("mle","mom
 #' @returns An object of class [bayesfit()].
 #' @keywords internal
 htfit <- function(data,
-                  prop.a, prop.b,
-                  prior.mu=c(0,10), prior.nu=c(2,1/2), prior.eta=c(4,1),
-                  trunc=100, comp.saved=10,
-                  maxit=10000, burn=2000, thin=4,
-                  adapt=2000, batch.size=125,
-                  start.ab = c("guesstimate", "prior"),
-                  mode=1, submodel=c("fom","none","ugm")){# "ugm": univariate Gaussian mixture
+                  prop_a,
+                  prop_b,
+                  prior_mu = c(0,10),
+                  prior_nu = c(2,1/2),
+                  prior_eta = c(4,1),
+                  trunc = 100,
+                  comp_saved = 10,
+                  maxit = 10000,
+                  burn = 2000,
+                  thin = 4,
+                  adapt = 2000,
+                  batch_size = 125,
+                  start_ab = c("guesstimate", "prior"),
+                  mode = 1,
+                  submodel = c("fom","none","ugm")) {
   n    <- dim(data)[1]
   nlag <- dim(data)[2]-1
-  if(length(prop.a) < 5){ prop.a <- rep(prop.a[1],5) }
-  if(length(prop.b) < 3){ prop.b <- rep(prop.b[1],3) }
+  if (length(prop_a) < 5) { prop_a <- rep(prop_a[1], 5) }
+  if (length(prop_b) < 3) { prop_b <- rep(prop_b[1], 3) }
   ## build trace containers
-  tr.len <- floor((maxit-burn)/thin)
-  t.a   <- t.b <- matrix(0, nrow=tr.len, ncol=nlag)
-  t.sig <- t.mu <- array(0, dim = c(tr.len,comp.saved,nlag))
-  t.w   <- matrix(0, nrow=tr.len, ncol=comp.saved)
-  t.g   <- numeric(tr.len)
-  t.ci  <- matrix(0, nrow=tr.len, ncol=n)
-  t.noo <- matrix(0, nrow=tr.len, ncol=comp.saved)
-  t.noc <- numeric(tr.len)
-  t.sd  <- array(0, dim=c(tr.len,8,nlag))#for RAMA
-  if(start.ab[1] == "guesstimate"){
+  tr_len <- floor((maxit-burn)/thin)
+  t_a   <- t_b <- matrix(0, nrow = tr_len, ncol = nlag)
+  t_sig <- t_mu <- array(0, dim = c(tr_len, comp_saved, nlag))
+  t_w   <- matrix(0, nrow = tr_len, ncol = comp_saved)
+  t_g   <- numeric(tr_len)
+  t_ci  <- matrix(0, nrow = tr_len, ncol = n)
+  t_noo <- matrix(0, nrow = tr_len, ncol = comp_saved)
+  t_noc <- numeric(tr_len)
+  t_sd  <- array(0, dim = c(tr_len, 8, nlag))#for RAMA
+  if (start_ab[1] == "guesstimate") {
     fit2step <- ht2step(data) # lags > 1 will be properly initialised in C routine
-    start.a <- fit2step$a     # depending on [submodel]
-    start.b <- fit2step$b
-  }else if(start.ab[1] == "prior"){
-    start.a <- start.b <- rep(Inf,nlag) # will be properly initialised in C routine
-  }else{
-    stop("In htfit(): invalid starting value strategy for start.ab")
+    start_a <- fit2step$a     # depending on [submodel]
+    start_b <- fit2step$b
+  } else if (start_ab[1] == "prior") {
+    start_a <- start_b <- rep(Inf, nlag) # will be properly initialised in C routine
+  } else {
+    stop("In htfit(): invalid starting value strategy for start_ab")
   }
-  if(submodel[1] == "ugm"){ submodel <- 0 }
-  else if(submodel[1]=="fom"){ submodel <- 1 }
-  else if(submodel[1]=="none"){ submodel <- 2 }
-  else{ stop("In htfit(): invalid submodel.") }
+  if (submodel[1] == "ugm") { submodel <- 0 }
+  else if (submodel[1]=="fom") { submodel <- 1 }
+  else if (submodel[1]=="none") { submodel <- 2 }
+  else { stop("In htfit(): invalid submodel.") }
   ## call C(++) wrapper
-  fit = .C(C_et_interface, as.double(data), as.integer(n), as.integer(nlag),
-           as.integer(trunc), as.integer(comp.saved), as.integer(maxit),
-           as.integer(burn), as.integer(thin), as.integer(adapt), as.integer(batch.size),
-           as.double(prop.a), as.double(prop.b),
-           as.double(prior.mu), as.double(prior.nu), as.double(prior.eta),
-           as.integer(mode), as.integer(submodel),
-           as.double(t.a), as.double(t.b), as.double(t.sig),
-           as.double(t.mu), as.double(t.w), as.double(t.g),
-           as.integer(t.ci), as.integer(t.noo), as.integer(t.noc), as.double(t.sd),
-           as.double(start.a), as.double(start.b))
+  fit = .C(C_et_interface,
+           as.double(data),
+           as.integer(n),
+           as.integer(nlag),
+           as.integer(trunc),
+           as.integer(comp_saved),
+           as.integer(maxit),
+           as.integer(burn),
+           as.integer(thin),
+           as.integer(adapt),
+           as.integer(batch_size),
+           as.double(prop_a),
+           as.double(prop_b),
+           as.double(prior_mu),
+           as.double(prior_nu),
+           as.double(prior_eta),
+           as.integer(mode),
+           as.integer(submodel),
+           as.double(t_a),
+           as.double(t_b),
+           as.double(t_sig),
+           as.double(t_mu),
+           as.double(t_w),
+           as.double(t_g),
+           as.integer(t_ci),
+           as.integer(t_noo),
+           as.integer(t_noc),
+           as.double(t_sd),
+           as.double(start_a),
+           as.double(start_b))
   ## format C output
   ret <- bayesfit()
-  ret$a    <- matrix(fit[[18]], nrow=tr.len, ncol=nlag)
-  ret$b    <- matrix(fit[[19]], nrow=tr.len, ncol=nlag)
-  ret$sd   <- array(fit[[20]], dim = c(tr.len,comp.saved,nlag))
-  ret$mean <- array(fit[[21]], dim = c(tr.len,comp.saved,nlag))
-  ret$w       <- matrix(fit[[22]], nrow=tr.len, ncol=comp.saved)
+  ret$a    <- matrix(fit[[18]], nrow = tr_len, ncol = nlag)
+  ret$b    <- matrix(fit[[19]], nrow = tr_len, ncol = nlag)
+  ret$sd   <- array(fit[[20]], dim = c(tr_len, comp_saved, nlag))
+  ret$mean <- array(fit[[21]], dim = c(tr_len, comp_saved, nlag))
+  ret$w       <- matrix(fit[[22]], nrow = tr_len, ncol = comp_saved)
   ret$prec    <- fit[[23]]
-  ret$ci      <- matrix(fit[[24]], nrow=tr.len, ncol=n)
-  ret$noo     <- matrix(fit[[25]], nrow=tr.len, ncol=comp.saved)
+  ret$ci      <- matrix(fit[[24]], nrow = tr_len, ncol = n)
+  ret$noo     <- matrix(fit[[25]], nrow = tr_len, ncol = comp_saved)
   ret$noc     <- fit[[26]]
-  ret$prop.sd <- array(fit[[27]], dim=c(tr.len, 8, nlag))
-  ret$len <- tr.len
+  ret$prop_sd <- array(fit[[27]], dim=c(tr_len, 8, nlag))
+  ret$len <- tr_len
   ret$nlag <- nlag
   ## add names
   ind <- 1:nlag
-  colnames(t.a) <- paste("alpha(",ind,")", sep="")
-  colnames(t.b) <- paste("beta(",ind,")", sep="")
+  colnames(t_a) <- paste("alpha(",ind,")", sep = "")
+  colnames(t_b) <- paste("beta(",ind,")", sep = "")
   #return in R format
   return(ret)
 }

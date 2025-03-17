@@ -9,15 +9,20 @@ theta2fit(
   lapl = FALSE,
   nlag = 1,
   R = 1000,
-  u.mar = 0,
-  u.dep,
-  probs = seq(u.dep, 0.9999, length.out = 30),
-  method.mar = c("mle", "mom", "pwm"),
+  u_mar = 0,
+  u_dep,
+  probs = seq(u_dep, 0.9999, length.out = 30),
+  method_mar = c("mle", "mom", "pwm"),
   method = c("prop", "MCi"),
   silent = FALSE,
-  R.boot = 0,
-  block.length = m * 5,
-  levels = c(0.025, 0.975)
+  R_boot = 0,
+  block_length = m * 5,
+  levels = c(0.025, 0.975),
+  u.mar = deprecated(),
+  u.dep = deprecated(),
+  method.mar = deprecated(),
+  R.boot = deprecated(),
+  block.length = deprecated()
 )
 }
 \arguments{
@@ -31,16 +36,16 @@ dependence in time.}
 
 \item{R}{integer; the number of samples used for estimating \eqn{\theta(x,m)}.}
 
-\item{u.mar}{marginal threshold; used when transforming the time series to
+\item{u_mar}{marginal threshold; used when transforming the time series to
 Laplace scale if \code{lapl} is FALSE; not used otherwise.}
 
-\item{u.dep}{dependence threshold; level above which the dependence is
-modelled. \code{u.dep} can be lower than \code{u.mar}.}
+\item{u_dep}{dependence threshold; level above which the dependence is
+modelled. \code{u_dep} can be lower than \code{u_mar}.}
 
 \item{probs}{vector of probabilities; the values of \eqn{x} for which to
 evaluate \eqn{\theta(x,m)}.}
 
-\item{method.mar}{a character string defining the method used to estimate the
+\item{method_mar}{a character string defining the method used to estimate the
 marginal GPD; either \code{"mle"} for maximum likelihood of \code{"mom"}
 for method of moments or \code{"pwm"} for probability weighted moments
 methods. Defaults to \code{"mle"}.}
@@ -51,14 +56,26 @@ for Monte Carlo integration (see Details).}
 
 \item{silent}{logical (\code{FALSE}); verbosity.}
 
-\item{R.boot}{integer; the number of samples used for the block bootstrap for
+\item{R_boot}{integer; the number of samples used for the block bootstrap for
 the confidence intervals.}
 
-\item{block.length}{integer; the block length used for the block-bootstrapped
+\item{block_length}{integer; the block length used for the block-bootstrapped
 confidence intervals.}
 
 \item{levels}{vector of probabilities; the quantiles of the bootstrap
 distribution of the extremal measure to be computed.}
+
+\item{u.mar}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} use \code{u_mar} instead.}
+
+\item{u.dep}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} use \code{u_dep} instead.}
+
+\item{method.mar}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} use \code{method_mar}
+instead.}
+
+\item{R.boot}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} use \code{R_boot} instead.}
+
+\item{block.length}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} use \code{block_length}
+instead.}
 }
 \value{
 An object of class \code{\link[=depmeasure]{depmeasure()}} of \code{type} "steptheta".
@@ -108,7 +125,7 @@ lines(grid, dnorm(grid), col="blue")
 ar <- qlapl(pnorm(ar))
 
 ## fit the data
-fit <- theta2fit(ts=ar, u.mar=0.95, u.dep=0.98)
+fit <- theta2fit(ts=ar, u_mar=0.95, u_dep=0.98)
 
 ## plot theta(x,1)
 plot(fit)

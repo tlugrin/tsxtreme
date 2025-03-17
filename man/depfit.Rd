@@ -6,28 +6,31 @@
 \usage{
 depfit(
   ts,
-  u.mar = 0,
-  u.dep = u.mar,
+  u_mar = 0,
+  u_dep = u_mar,
   lapl = FALSE,
-  method.mar = c("mle", "mom", "pwm"),
+  method_mar = c("mle", "mom", "pwm"),
   nlag = 1,
   par = bayesparams(),
-  submodel = c("fom", "none", "ugm")
+  submodel = c("fom", "none", "ugm"),
+  u.mar = deprecated(),
+  u.dep = deprecated(),
+  method.mar = deprecated()
 )
 }
 \arguments{
 \item{ts}{numeric vector; time series to be fitted.}
 
-\item{u.mar}{marginal threshold; used when transforming the time series to
+\item{u_mar}{marginal threshold; used when transforming the time series to
 the Laplace scale.}
 
-\item{u.dep}{dependence threshold; level above which the dependence is
-modelled. \code{u.dep} can be lower than \code{u.mar}.}
+\item{u_dep}{dependence threshold; level above which the dependence is
+modelled. \code{u_dep} can be lower than \code{u_mar}.}
 
 \item{lapl}{logical; is \code{ts} on the Laplace scale already? The default
 (FALSE) assumes unknown marginal distribution.}
 
-\item{method.mar}{a character string defining the method used to estimate the
+\item{method_mar}{a character string defining the method used to estimate the
 marginal GPD; either \code{"mle"} for maximum likelihood or \code{"mom"}
 for method of moments or \code{"pwm"} for probability weighted moments.
 Defaults to \code{"mle"}.}
@@ -40,6 +43,13 @@ dependence in time.}
 \item{submodel}{a character string; "fom" for \emph{first order Markov},
 "none" for \emph{no particular time structure}, or "ugm" for
 \emph{univariate Gaussian mixture} (see Details).}
+
+\item{u.mar}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} use \code{u_mar} instead.}
+
+\item{u.dep}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} use \code{u_dep} instead.}
+
+\item{method.mar}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} use \code{method_mar}
+instead.}
 }
 \value{
 An object of class \code{\link[=bayesfit]{bayesfit()}}.
@@ -74,7 +84,7 @@ params <- bayesparams()
 params$maxit <- 100# bigger numbers would be
 params$burn  <- 10 # more sensible...
 params$thin  <- 4
-fit <- depfit(ts=ar, u.mar=0.95, u.dep=0.98, par=params)
+fit <- depfit(ts=ar, u_mar=0.95, u_dep=0.98, par=params)
 
 ########
 ## density estimation with submodel=="ugm"

@@ -59,6 +59,11 @@ enum submodel{// structure of the parameters of H+T model
     none                 // no constraints
 };
 
+enum conditions{
+  without,
+  with
+};
+
 enum algotype{
     conditional, // blocked Gibbs type
     marginal     // R. M. Neal type (NOT IMPLEMENTED YET!)
@@ -79,6 +84,7 @@ public:
           double *sd_propa, double *sd_propb,
           double *mu_prior, double *nu_prior, double *eta_prior,
           double *start_a, double *start_b,
+          tsxtreme::conditions const& conds,
           tsxtreme::debmode const& mode, tsxtreme::submodel const& spec);
     ~ETfit();
 
@@ -131,6 +137,7 @@ private:
     unsigned int nbswaps2;         // idem for swaps of type 2
     const tsxtreme::debmode mode;
     const tsxtreme::submodel spec;
+    const tsxtreme::conditions conds;
     const double tol;              // when computing bounds on (alpha,beta)
     const double v;                // high quantile, same context
 

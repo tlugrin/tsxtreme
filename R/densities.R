@@ -11,7 +11,7 @@
 ## LAPLACE DISTRIBUTION
 #' The Laplace distribution
 #' 
-#' Density, distribution function, qunatile function and random generation for
+#' Density, distribution function, quantile function and random generation for
 #' the Laplace distribution.
 #' 
 #' @details
@@ -33,10 +33,12 @@
 #' @param n number of samples.
 #' @param loc vector of location parameters.
 #' @param scale vector of scale parameters; must be non-negative.
-#' @param log,log.p logical; if TRUE, probabilities `p` are given as `log(p)`;
+#' @param log,log_p logical; if TRUE, probabilities `p` are given as `log(p)`;
 #'   defaults to FALSE.
-#' @param lower.tail logical; if TRUE (default), probabilities are
+#' @param lower_tail logical; if TRUE (default), probabilities are
 #'   \eqn{P(X\le x)}, otherwise \eqn{P(X>x)}.
+#' @param log.p,lower.tail `r lifecycle::badge('deprecated')` use `log_p` and
+#'   `lower_tail` instead.
 #' @returns `dlapl` gives the density, `plapl` gives the distribution function,
 #'   `qlapl` gives the quantile function, and `rlapl` generates random deviates.
 #'   
@@ -57,7 +59,7 @@
 #' rnd <- rlapl(1000, loc=c(-5,-3,2), scale=0.5)
 #' 
 #' ## an alternative:
-#' rnd <- runif(1000)
+#' rnd <- runif (1000)
 #' rnd <- qlapl(rnd, loc=c(-5,-3,2), scale=0.5)
 #' 
 #' ## integrate the Laplace density on [a,b]
@@ -66,14 +68,13 @@
 #' integral <- plapl(b)-plapl(a)
 #' 
 #' @export
-dlapl <- function(x, loc=0, scale=1, log=FALSE){
-  if(any(scale < 0)) stop("scale parameter must be non-negative")
-  
-  if(log){
+dlapl <- function(x, loc = 0, scale = 1, log = FALSE) {
+  if (any(scale < 0)) stop("scale parameter must be non-negative")
+  if (log) {
     ret <- -abs(x-loc)/scale-log(2)-log(scale)
     ret[is.nan(ret)] <- 1
     return(ret)
-  }else{
+  } else {
     ret <- exp(-abs(x-loc)/scale)/2/scale
     ret[is.nan(ret)] <- 1
     return(ret)
@@ -82,17 +83,26 @@ dlapl <- function(x, loc=0, scale=1, log=FALSE){
 
 #' @rdname dlapl
 #' @export
-plapl <- function(q, loc=0, scale=1, lower.tail=TRUE, log.p=FALSE){
-  if(any(scale < 0)) stop("scale parameter must be non-negative")
+plapl <- function(q, loc = 0, scale = 1, lower_tail = TRUE, log_p = FALSE,
+                  lower.tail = deprecated(), log.p = deprecated()) {
+  if (lifecycle::is_present(lower.tail)) {
+    lifecycle::deprecate_warn("0.4.0", "plapl(lower.tail)", "plapl(lower_tail")
+    lower_tail <- lower.tail
+  }
+  if (lifecycle::is_present(log.p)) {
+    lifecycle::deprecate_warn("0.4.0", "plapl(log.p)", "plapl(log_p)")
+    log_p <- log.p
+  }
+  if (any(scale < 0)) stop("scale parameter must be non-negative")
   ret <- sign(q-loc)*(1-exp(-abs(q-loc)/scale))/2
   ret[is.nan(ret)] <- 0.5
-  if(lower.tail){
-    if(log.p)
+  if (lower_tail) {
+    if (log_p)
       return(log(0.5+ret))
     else
       return(0.5+ret)
-  }else{
-    if(log.p)
+  } else {
+    if (log_p)
       return(log(0.5-ret))
     else
       return(0.5-ret)
@@ -101,25 +111,34 @@ plapl <- function(q, loc=0, scale=1, lower.tail=TRUE, log.p=FALSE){
 
 #' @rdname dlapl
 #' @export
-qlapl <- function(p, loc=0, scale=1, lower.tail=TRUE, log.p=FALSE){
-  if(any(p < 0) || any(p > 1)) stop("p must lie between 0 and 1")
-  if(any(scale < 0)) stop("scale must be non-negative")
-  if(log.p) p <- exp(p)
-  if(!lower.tail) p <- 1-p
+qlapl <- function(p, loc = 0, scale = 1, lower_tail = TRUE, log_p = FALSE,
+                  lower.tail = deprecated(), log.p = deprecated()) {
+  if (lifecycle::is_present(lower.tail)) {
+    lifecycle::deprecate_warn("0.4.0", "plapl(lower.tail)", "plapl(lower_tail")
+    lower_tail <- lower.tail
+  }
+  if (lifecycle::is_present(log.p)) {
+    lifecycle::deprecate_warn("0.4.0", "plapl(log.p)", "plapl(log_p)")
+    log_p <- log.p
+  }
+  if (any(p < 0) || any(p > 1)) stop("p must lie between 0 and 1")
+  if (any(scale < 0)) stop("scale must be non-negative")
+  if (log_p) p <- exp(p)
+  if (!lower_tail) p <- 1-p
   ret <- loc-scale*sign(p-0.5)*log(1-2*abs(p-0.5))
   nas <- is.nan(ret)
-  if(sum(nas)){
-    p <- rep(p, length.out=length(ret))
+  if (sum(nas)) {
+    p <- rep(p, length.out = length(ret))
     p <- p[nas]
-    ret[nas] <- ifelse(p==1,Inf,-Inf)
+    ret[nas] <- ifelse(p == 1, Inf, -Inf)
   }
   return(ret)
 }
 
 #' @rdname dlapl
 #' @export
-rlapl <- function(n, loc=0, scale=1){
-  if(any(scale < 0)) stop("scale must be non-negative")
-  u <- runif(n)
-  return(qlapl(u, loc=loc, scale=scale))
+rlapl <- function(n, loc = 0, scale = 1) {
+  if (any(scale < 0)) stop("scale must be non-negative")
+  u <- runif (n)
+  return(qlapl(u, loc = loc, scale = scale))
 }
