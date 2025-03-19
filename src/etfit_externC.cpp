@@ -28,7 +28,7 @@ extern "C" {
                    int* adapt, int* batchsize,
                    double* sd_propa, double* sd_propb,
                    double* mu_prior, double* nu_prior, double* eta_prior,
-                   int* mode, int* spec,
+                   int* conds, int* mode, int* spec,
                    double* t_a, double* t_b, double* t_sig, double* t_mu,
                    double* t_w, double* t_gam, int* t_ci, int* t_noo, int* t_noc, double* t_sd,
                    double* start_a, double* start_b){
@@ -36,7 +36,7 @@ extern "C" {
         //////////////////////////////////////////////////
         // FEED C++ CLASS & LAUNCH COMPUTATIONS
 
-        std::clock_t start=std::clock();//start chrono
+        std::clock_t start=std::clock();//start timer
 
         tsxtreme::debmode modeCpp;
         switch(*mode){
@@ -58,10 +58,18 @@ extern "C" {
             break;
         default: Rf_error("bad integer initialisation value for _spec_ in [et_interface()]");
         }
+        tsxtreme::conditions condsCpp;
+        switch(*conds){
+        case 0: condsCpp = tsxtreme::without;
+            break;
+        case 1: condsCpp = tsxtreme::with;
+            break;
+        default: Rf_error("bad integer initialisation value for _conds_ in [et_interface()]");
+        }
 
         ETfit fit(data, n, nlag, k, kred, maxit, burn, thin, adapt, batchsize,
                   sd_propa, sd_propb, mu_prior, nu_prior, eta_prior,
-                  start_a, start_b, modeCpp, specCpp);
+                  start_a, start_b, condsCpp, modeCpp, specCpp);
         fit.run();
         const std::vector<ETpar> tr = fit.getTraces();
 

@@ -19,6 +19,7 @@ htfit(
   adapt = 2000,
   batch_size = 125,
   start_ab = c("guesstimate", "prior"),
+  conditions = TRUE,
   mode = 1,
   submodel = c("fom", "none", "ugm")
 )
@@ -61,6 +62,9 @@ variances of \eqn{\alpha} and \eqn{\beta}; 0 means no adaption.}
 \item{start_ab}{either "guesstimate" to initialise start values for alpha and
 beta from a stepwise fit or "prior" to use random draws from their
 respective prior distributions.}
+
+\item{conditions}{logical; should conditions on \eqn{\alpha} and \eqn{\beta}
+be set? (see Details) Defaults to \code{TRUE}.}
 
 \item{mode}{verbosity; 0 for debug mode, 1 (default) for standard output,
 and 2 for silent.}

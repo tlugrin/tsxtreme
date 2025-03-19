@@ -163,7 +163,7 @@ n   <- 10000
 dep <- 0.5
 ar    <- numeric(n)
 ar[1] <- rnorm(1)
-for(i in 2:n)
+for (i in 2:n)
   ar[i] <- rnorm(1, mean = dep*ar[i-1], sd = 1-dep^2)
 plot(ar, type = "l")
 plot(density(ar))

@@ -1,7 +1,7 @@
 # tsxtreme 0.4.0
 
 * add option to set starting values for alpha and beta
-* TODO: add option not to enforce constraints on alpha and beta in the Bayesian fit
+* add option not to enforce constraints on alpha and beta in the Bayesian fit
 * add a few methods to the user interface
 * fix bug in the computation of the Monte-Carlo integration
 * migrate documentation to roxygen

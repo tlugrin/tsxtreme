@@ -18,6 +18,7 @@ bayesparams(
   adapt = 5000,
   batch_size = 125,
   start_ab = c("guesstimate", "prior"),
+  conditions = TRUE,
   mode = 1,
   prop.a = deprecated(),
   prop.b = deprecated(),
@@ -64,6 +65,9 @@ variances of \eqn{\alpha} and \eqn{\beta}; 0 means no adaption.}
 beta from a stepwise fit or "prior" to use random draws from their
 respective prior distributions.}
 
+\item{conditions}{logical; should conditions on \eqn{\alpha} and \eqn{\beta}
+be set? (see Details) Defaults to \code{TRUE}.}
+
 \item{mode}{verbosity; 0 for debug mode, 1 (default) for standard output,
 and 2 for silent.}
 
@@ -97,6 +101,11 @@ values yield slow adaption.
 
 Default values for the hyperparameters are chosen to get reasonably
 uninformative priors.
+
+\link{conditions} implements additional conditions suggested by
+Keef, Papastathopoulos and Tawn (2013) on the ordering of conditional
+quantiles. These conditions help with getting a consistent fit by shrinking
+the domain in which \eqn{(\alpha,\beta)} live.
 
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} The \strong{dot-notation} for elements of
 the "bayesparams" object is deprecated in favour of the \strong{snake-notation}.

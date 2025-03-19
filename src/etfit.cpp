@@ -34,7 +34,7 @@ ETfit::ETfit(double* data, int* n, int* nlag,
     : n(*n), nlag(*nlag), k(*k), kred(*kred),
       maxit(*maxit), burn(*burn), thin(*thin),
       maxadapt(*adapt), batchsize(*batchsize),
-      conds(conds), V(*k,0), sumV(0),
+      V(*k,0), sumV(0), conds(conds),
       mode(mode), spec(spec),
       tol(0.001), v(-log(2*(1 - 0.99999999)))
 {
@@ -728,6 +728,7 @@ void ETfit::bounds(bool fix_a, double const& val, double* bds, const unsigned in
           return;
         }
     }
+    
     double in = 2, out = 2;
     double mid;
 
@@ -822,16 +823,17 @@ void ETfit::bounds(bool fix_a, double const& val, double* bds, const unsigned in
 
 
 bool ETfit::cond(double const& a, double const& b, double const& p, const unsigned int &dim) const{
-    double z_pos = qresid(1, 0, p, dim);
-    double z     = qresid(a, b, p, dim);
-    double z_neg = qresid(-1, 0, p, dim);
-    rout("DEBUG: a=%.1f, b=%.1f, z_pos=%f, z=%f, z_neg=%f,v=%f\n",a,b,z_pos,z,z_neg,v);
     if(a < -1 or a > 1 or b >= 1 or b < 0){
         return(false);
     }
     if(conds == tsxtreme::without){
         return(true);
     }
+    
+    double z_pos = qresid(1, 0, p, dim);
+    double z     = qresid(a, b, p, dim);
+    double z_neg = qresid(-1, 0, p, dim);
+    rout("DEBUG: a=%.1f, b=%.1f, z_pos=%f, z=%f, z_neg=%f,v=%f\n",a,b,z_pos,z,z_neg,v);
 
     // Case I
     if(a > fmin2(1 - b*z*pow(v, b - 1),  1 - pow(v, b - 1)*z + z_pos/v)){//Case I first part not satisfied

@@ -45,7 +45,7 @@
 #' @param nlag integer; number of lags to be considered when modelling the
 #'   dependence in time.
 #' @param conditions logical; should conditions on \eqn{\alpha} and \eqn{\beta}
-#'   be set? (see Details) Defaults to \code{TRUE}.
+#'   be set? (see Details) Defaults to `TRUE`.
 #' @returns An object of class [stepfit()].
 #' @seealso [depfit()], [theta2fit()]
 #' @examples

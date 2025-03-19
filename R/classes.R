@@ -366,6 +366,11 @@ residual_distributions <- function(x, lag, grid) {
 #' Default values for the hyperparameters are chosen to get reasonably
 #' uninformative priors.
 #' 
+#' [conditions] implements additional conditions suggested by
+#' Keef, Papastathopoulos and Tawn (2013) on the ordering of conditional
+#' quantiles. These conditions help with getting a consistent fit by shrinking
+#' the domain in which \eqn{(\alpha,\beta)} live.
+#' 
 #' `r lifecycle::badge('deprecated')` The **dot-notation** for elements of
 #' the "bayesparams" object is deprecated in favour of the **snake-notation**.
 #' For example, `prop.a` is now `prop_a`, `prior.mu` is now `prior_mu`,
@@ -396,6 +401,8 @@ residual_distributions <- function(x, lag, grid) {
 #' @param start_ab either "guesstimate" to initialise start values for alpha and
 #'   beta from a stepwise fit or "prior" to use random draws from their
 #'   respective prior distributions.
+#' @param conditions logical; should conditions on \eqn{\alpha} and \eqn{\beta}
+#'   be set? (see Details) Defaults to `TRUE`.
 #' @param mode verbosity; 0 for debug mode, 1 (default) for standard output,
 #'   and 2 for silent.
 #' @returns An object of class "bayesparams".
@@ -418,6 +425,7 @@ bayesparams <- function(prop_a = 0.02,
                         adapt = 5000,
                         batch_size = 125,
                         start_ab = c("guesstimate", "prior"),
+                        conditions = TRUE,
                         mode = 1,
                         prop.a = deprecated(),
                         prop.b = deprecated(),

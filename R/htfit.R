@@ -114,6 +114,7 @@ depfit <- function(ts,
         adapt = par$adapt,
         batch_size = par$batch_size,
         start_ab = par$start_ab,
+        conditions = par$conditions,
         mode = par$mode,
         submodel = submodel)
 }
@@ -143,6 +144,7 @@ htfit <- function(data,
                   adapt = 2000,
                   batch_size = 125,
                   start_ab = c("guesstimate", "prior"),
+                  conditions = TRUE,
                   mode = 1,
                   submodel = c("fom","none","ugm")) {
   n    <- dim(data)[1]
@@ -160,9 +162,13 @@ htfit <- function(data,
   t_noc <- numeric(tr_len)
   t_sd  <- array(0, dim = c(tr_len, 8, nlag))#for RAMA
   if (start_ab[1] == "guesstimate") {
-    fit2step <- ht2step(data) # lags > 1 will be properly initialised in C routine
-    start_a <- fit2step$a     # depending on [submodel]
-    start_b <- fit2step$b
+    fit2step <- ht2step(data, conditions) # lags > 1 will be properly
+    start_a <- fit2step$a                 # initialised in C routine
+    start_b <- fit2step$b                 #  depending on [submodel]
+    if (mode == 0) {
+      message("DEBUG: Guesstimates for alpha and beta: ", start_a,
+              " and ", start_b)
+    }
   } else if (start_ab[1] == "prior") {
     start_a <- start_b <- rep(Inf, nlag) # will be properly initialised in C routine
   } else {
@@ -189,6 +195,7 @@ htfit <- function(data,
            as.double(prior_mu),
            as.double(prior_nu),
            as.double(prior_eta),
+           as.integer(conditions),
            as.integer(mode),
            as.integer(submodel),
            as.double(t_a),

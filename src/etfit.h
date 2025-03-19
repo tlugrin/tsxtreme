@@ -59,7 +59,7 @@ enum submodel{// structure of the parameters of H+T model
     none                 // no constraints
 };
 
-enum conditions{
+enum conditions{// Keef et al. conditions on (alpha, beta)
   without,
   with
 };
@@ -135,9 +135,9 @@ private:
     double sumV;                   // sum_{c=1}^{k-1} log(1-V_c)
     unsigned int nbswaps1;         // counts number of swaps of type 1 (output just through rout)
     unsigned int nbswaps2;         // idem for swaps of type 2
+    const tsxtreme::conditions conds;
     const tsxtreme::debmode mode;
     const tsxtreme::submodel spec;
-    const tsxtreme::conditions conds;
     const double tol;              // when computing bounds on (alpha,beta)
     const double v;                // high quantile, same context
 

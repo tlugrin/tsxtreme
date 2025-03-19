@@ -27,7 +27,8 @@ range of x-values, trims the left and right tails to cover the centre of the
 distribution.
 }
 \details{
-Initially intended for internal use only, but exposed to the user as it may
-prove useful to adjust plots to different situations. Only minimal checks are
-performed on the inputs. You have been warned!
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} Initially intended for internal use
+only, but exposed to the user as it may prove useful to adjust plots to
+different situations. Only minimal checks are performed on the inputs.
+You have been warned!
 }
