@@ -6,6 +6,7 @@
 * fix bug in the computation of the Monte-Carlo integration
 * migrate documentation to roxygen
 * update documentation throughout the package
+* add a package vignette
 * update code to conform to modern R conventions
 * deprecate dot-notation methods and arguments
 

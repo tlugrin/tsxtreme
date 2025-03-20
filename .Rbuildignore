@@ -6,3 +6,5 @@
 ^\.Rhistory$
 ^\.\.Rcheck$
 ^CRAN-SUBMISSION$
+^doc$
+^Meta$

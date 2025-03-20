@@ -44,7 +44,7 @@ p_res <- function(s, z, w, mu, sig){
 
 #' @rdname p_res
 r_res <- function(R, S, nlag, w, mu, sig){
-  sim_Z <- array(0, dim = c(R,S,nlag))
+  sim_Z <- array(0, dim = c(R, S, nlag))
   
   for (sw in 1:S) {# loop on selected sweeps
     hwmany <- rmultinom(1, R, w[sw,])
@@ -52,11 +52,14 @@ r_res <- function(R, S, nlag, w, mu, sig){
     c      <- 1
     while (r<R) {# sample from mixture
       if (hwmany[c]>0) {
-        if (dim(s)[3]==1) {
-          sim_Z[r:(r+hwmany[c]-1),sw,] <- rnorm(hwmany[c], m[sw,c,], s[sw,c,])
+        if (dim(sig)[3] == 1) {
+          sim_Z[r:(r+hwmany[c]-1), sw,] <- rnorm(n = hwmany[c],
+                                                 mean = mu[sw,c,],
+                                                 sd = sig[sw,c,])
         } else {
-          sim_Z[r:(r+hwmany[c]-1),sw,] <- rmvnorm(hwmany[c], m[sw,c,],
-                                                  diag(s[sw,c,]^2))
+          sim_Z[r:(r+hwmany[c]-1), sw,] <- rmvnorm(n = hwmany[c],
+                                                   mean = mu[sw,c,],
+                                                   sigma = diag(sig[sw,c,]^2))
         }
       }
       r <- r+hwmany[c]

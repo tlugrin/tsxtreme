@@ -61,9 +61,10 @@ variances of \eqn{\alpha} and \eqn{\beta}; 0 means no adaption.}
 
 \item{batch_size}{size of batches used in the adaption algorithm. It has no effect if \code{adapt==0}.}
 
-\item{start_ab}{either "guesstimate" to initialise start values for alpha and
+\item{start_ab}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} either "guesstimate" to
+initialise start values for alpha and
 beta from a stepwise fit or "prior" to use random draws from their
-respective prior distributions.}
+respective prior distributions. New in version 0.4.0.}
 
 \item{conditions}{logical; should conditions on \eqn{\alpha} and \eqn{\beta}
 be set? (see Details) Defaults to \code{TRUE}.}
@@ -116,7 +117,7 @@ of the package.
 \examples{
 is.bayesparams(bayesparams()) # TRUE
 ## use defaults, change max number of iteration of MCMC
-par <- bayesparams(maxit=1e5)
+par <- bayesparams(maxit = 1e5)
 }
 \seealso{
 \code{\link[=bayesfit]{bayesfit()}}, \code{\link[=depmeasure]{depmeasure()}}

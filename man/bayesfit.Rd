@@ -23,9 +23,9 @@ An object of class "bayesfit" with MCMC traces for:
 \item{w }{weights of the mixture components (matrix).}
 \item{prec }{precision parameter of the Dirichlet process (vector).}
 \item{ci }{auxiliary variable; components' indices for each observation (matrix).}
-\item{noo }{number of observation in each mixture component (matrix).
+\item{noo }{number of observation in each mixture component (matrix).}
 \item{noc }{number of non-empty components in the mixture, i.e., for which at least one data points has a component index pointing to it.}
-\item{prop.sd } \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} use \code{prop_sd} instead.
+\item{prop.sd }{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} use \code{prop_sd} instead.}
 \item{prop_sd }{standard deviations for the proposal distributions of \code{a} and \code{b} (3-dimensional array).}
 And \code{len}, the length of the traces, i.e., the number of iterations
 saved after burning and thinning; \code{nlag} stores the number of lags

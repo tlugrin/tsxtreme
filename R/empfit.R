@@ -129,7 +129,7 @@ thetaruns <- function(ts,
   nbr_vert <- length(mesh)
   nbr_quant<- 1+length(levels)
   theta    <- matrix(0, nrow = nbr_vert, ncol = nbr_quant)
-  colnames(theta) <- c("estimate",paste(levels*100,"%", sep=""))
+  colnames(theta) <- c("estimate", paste(levels*100,"%", sep=""))
   ## compute and store
   th_est             <- compute_runs(data, mesh_L)
   theta[,"estimate"] <- th_est[[1]]
@@ -138,7 +138,7 @@ thetaruns <- function(ts,
   ## compute bootstrapped quantiles
   if (R_boot > 0 & nbr_quant > 1) {
     ts_R <- block_bootstrap_sample(ts, block_length, R_boot)
-    th_R <- matrix(0, nrow=nbr_vert, ncol=R_boot)
+    th_R <- matrix(0, nrow = nbr_vert, ncol=R_boot)
     for (r in 1:R_boot) {
       ts_boot  <- scale_ts(ts_R[,r], u = u_mar, method = method_mar)$ts_L
       ts_mat   <- lags_matrix(ts_boot, nlag = nlag)

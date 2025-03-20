@@ -34,19 +34,19 @@ conditions_verify <- function(a, b, p, v = -log(2*(1-0.99999999)), data) {
     cond1 <- (1 - b*z_q*v^{b-1} < a)
     if (b*z_q>0) cond2 <- ( (1-1/b) * exp( log(b*z_q)*(1/(1-b)) + log(1-a)*(-b/(1-b)) ) + z_q_pos > 0 )
     else        cond2 <- ( (1-1/b) * (b*z_q)^{1/(1-b)} * (1-a)^{-b/(1-b)} + z_q_pos > 0 )
-    if (cond.1 && cond.2) { case.1 <- TRUE }
+    if (cond1 && cond2) { case1 <- TRUE }
     else { return(FALSE) }
   }
   # Case II
-  case.2 <- FALSE
+  case2 <- FALSE
   if (-a <= min(1 + b*z_q*v^{b-1}, 1 + v^{b-1}*z_q - z_q_neg/v)) {
-    case.2 <- TRUE
+    case2 <- TRUE
     return(TRUE)
   } else {
-    cond.1 <- ( 1 + b*v^{b-1}*z_q < -a )
-    if (-b*z_q>0) cond.2 <- ( (1-1/b) * exp( log(-b*z_q)*(1/(1-b)) + log(1+a)*(-b/(1-b)) ) - z_q_neg > 0 )
-    else         cond.2 <- ( (1-1/b) * (-b*z_q)^{1/(1-b)} * (1+a)^{-b/(1-b)} - z_q_neg > 0 )
-    if (cond.1 && cond.2) { case.2 <- TRUE; return(TRUE) }
+    cond1 <- ( 1 + b*v^{b-1}*z_q < -a )
+    if (-b*z_q>0) cond2 <- ( (1-1/b) * exp( log(-b*z_q)*(1/(1-b)) + log(1+a)*(-b/(1-b)) ) - z_q_neg > 0 )
+    else         cond2 <- ( (1-1/b) * (-b*z_q)^{1/(1-b)} * (1+a)^{-b/(1-b)} - z_q_neg > 0 )
+    if (cond1 && cond2) { case2 <- TRUE; return(TRUE) }
     else { return(FALSE) }
   }
 }

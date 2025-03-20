@@ -17,6 +17,6 @@ nllh_gpd_0(par, u, x)
 A scalar, value of the negative log-likelihood of the GPD
 }
 \description{
-Called by \code{\link[=gpd_mle]{gpd_mle()}} when \code{shape_null_hyp==TRUE}, not exposed to the user.
+Called by \code{\link[=gpd.mle]{gpd.mle()}} when \code{shape_null_hyp==TRUE}, not exposed to the user.
 }
 \keyword{internal}

@@ -30,7 +30,7 @@
 #' @returns An object of class "stepfit" with the following elements:
 #'   \item{a, b }{Heffernan--Tawn model parameters of length `nlag`; \eqn{\alpha} controls the conditional extremal expectation, while \eqn{\beta} controls the conditional extremal expectation and variance.}
 #'   \item{res }{matrix of fitted residuals with `nlag` columns.}
-#'   \item{pars.se} `r lifecycle::badge('deprecated')` use `pars_se` instead.
+#'   \item{pars.se}{`r lifecycle::badge('deprecated')` use `pars_se` instead.}
 #'   \item{pars_se }{2-column matrix of estimated standard errors for \code{a} (first column) and \code{b} (second column), given by the hessian matrix of the likelihood function used in the first step of the inference procedure.}
 #'   \item{nlag }{number of lags.}
 #' @seealso [bayesfit()], [depmeasure()]
@@ -132,9 +132,9 @@ plot.stepfit <- function(x, ...) {
 #'   \item{w }{weights of the mixture components (matrix).}
 #'   \item{prec }{precision parameter of the Dirichlet process (vector).}
 #'   \item{ci }{auxiliary variable; components' indices for each observation (matrix).}
-#'   \item{noo }{number of observation in each mixture component (matrix).
+#'   \item{noo }{number of observation in each mixture component (matrix).}
 #'   \item{noc }{number of non-empty components in the mixture, i.e., for which at least one data points has a component index pointing to it.}
-#'   \item{prop.sd } `r lifecycle::badge('deprecated')` use `prop_sd` instead.
+#'   \item{prop.sd }{`r lifecycle::badge('deprecated')` use `prop_sd` instead.}
 #'   \item{prop_sd }{standard deviations for the proposal distributions of \code{a} and \code{b} (3-dimensional array).}
 #'   And \code{len}, the length of the traces, i.e., the number of iterations
 #'   saved after burning and thinning; \code{nlag} stores the number of lags
@@ -257,16 +257,21 @@ plot.bayesfit <- function(x, which=1:3, ...) {
 
 #' Compute the residual density/distribution function on a grid of x-values
 #' 
-#' Helper function for plotting the mixture density or distribution function
+#' `r lifecycle::badge('experimental')` Helper function for plotting the mixture density or distribution function
 #' of the residuals as expressed in the conditional tail model. Given a broad
 #' range of x-values, trims the left and right tails to cover the centre of the
 #' distribution.
 #' 
 #' @details
-#' `r lifecycle::badge('experimental')` Initially intended for internal use
+#' Initially intended for internal use
 #' only, but exposed to the user as it may prove useful to adjust plots to
 #' different situations. Only minimal checks are performed on the inputs.
-#' You have been warned! 
+#' You have been warned!
+#' 
+#' The logic behind these methods is to provide a very wide and coarse grid
+#' first, e.g., `seq(-100, 100, 1)` and to use the returned element `x` to
+#' build a finer grid, say, `seq(min(x), max(x), by = 0.1)` to be used in a
+#' subsequent call to the same method.
 #' 
 #' @param x a bayesfit object
 #' @param lag the dimension of the residual density/distribution function to
@@ -398,9 +403,10 @@ residual_distributions <- function(x, lag, grid) {
 #'   Regional Adaptive Monte-Carlo Algorithm) is applied to the proposal
 #'   variances of \eqn{\alpha} and \eqn{\beta}; 0 means no adaption.
 #' @param batch_size size of batches used in the adaption algorithm. It has no effect if \code{adapt==0}.
-#' @param start_ab either "guesstimate" to initialise start values for alpha and
+#' @param start_ab `r lifecycle::badge('experimental')` either "guesstimate" to
+#'   initialise start values for alpha and
 #'   beta from a stepwise fit or "prior" to use random draws from their
-#'   respective prior distributions.
+#'   respective prior distributions. New in version 0.4.0.
 #' @param conditions logical; should conditions on \eqn{\alpha} and \eqn{\beta}
 #'   be set? (see Details) Defaults to `TRUE`.
 #' @param mode verbosity; 0 for debug mode, 1 (default) for standard output,
@@ -410,7 +416,7 @@ residual_distributions <- function(x, lag, grid) {
 #' @examples
 #' is.bayesparams(bayesparams()) # TRUE
 #' ## use defaults, change max number of iteration of MCMC
-#' par <- bayesparams(maxit=1e5)
+#' par <- bayesparams(maxit = 1e5)
 #' @export
 bayesparams <- function(prop_a = 0.02,
                         prop_b = 0.02,

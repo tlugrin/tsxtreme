@@ -20,6 +20,6 @@ grad_gpd(par, u, x)
 A scalar, value of the negative log-likelihood of the GPD.
 }
 \description{
-Called by \code{\link[=gpd_mle]{gpd_mle()}}, not exposed to the user.
+Called by \code{\link[=gpd.mle]{gpd.mle()}}, not exposed to the user.
 }
 \keyword{internal}

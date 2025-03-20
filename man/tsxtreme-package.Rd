@@ -6,7 +6,7 @@
 \alias{tsxtreme-package}
 \title{tsxtreme: Bayesian Modelling of Extremal Dependence in Time Series}
 \description{
-Characterisation of the extremal dependence structure of time series, avoiding pre-processing and filtering as done typically with peaks-over-threshold methods. It uses the conditional approach of Heffernan and Tawn (2004) \doi{10.1111/j.1467-9868.2004.02050.x} which is very flexible in terms of extremal and asymptotic dependence structures, and Bayesian methods improve efficiency and allow for deriving measures of uncertainty. For example, the package contains a routine to estimate the extremal index, a measure related to the size of clusters of extreme values in time, and this same routine also gives access to the raw samples from the extremal index posterior distribution.
+Characterisation of the extremal dependence structure of time series, avoiding pre-processing and filtering as done typically with peaks-over-threshold methods. It uses the conditional approach of Heffernan and Tawn (2004) \doi{10.1111/j.1467-9868.2004.02050.x} which is very flexible in terms of extremal and asymptotic dependence structures, but requires a stepwise inference approach. Following Lugrin et al. (2016) \doi{10.1007/s10687-016-0258-0} this package implements a semiparametric Bayesian method to improve efficiency and allow for deriving measures of uncertainty consistently. For example, the package contains a routine to estimate the extremal index, a measure related to the size of clusters of extreme values in time, and this same routine also gives access to the raw samples from the extremal index posterior distribution.
 }
 \details{
 The Heffernan--Tawn conditional formulation for a stationary time series
@@ -45,25 +45,25 @@ Heffernan and Tawn (2004) are also part of the package, namely
 The empirical estimation of the extremal index can be done using
 \code{\link[=thetaruns]{thetaruns()}} and some basic functions handling the Laplace
 distribution are also available in \code{\link[=dlapl]{dlapl()}}.
+
+Read \code{vignette("time-series-extremes")} to get more details and a gentle
+introduction to the functionality of the package.
 }
 \references{
-Coles, S., Heffernan, J. E. and Tawn, J. A. (1999) Dependence measures for
-extreme value analyses. \emph{Extremes}, \strong{2}, 339--365.
-
-Davison, A. C. and Smith, R. L. (1990) Models for exceedances over high
-thresholds. \emph{Journal of the Royal Statistical Society Series B},
-\strong{52}, 393--442.
+Lugrin, T., Davison, A. C. and Tawn, J. A. (2016) Bayesian uncertainty
+management in temporal dependence of extremes. \emph{Extremes}, \strong{19}, 491--515.
 
 Heffernan, J. E. and Tawn, J. A. (2004) A conditional approach for
 multivariate extreme values.
 \emph{Journal of the Royal Statistical Society Series B}, \strong{66}, 497--546.
 
-Ledford, W. A. and Tawn, J. A. (2003) Diagnostics for dependence within
-time series extremes. \emph{Journal of the Royal Statistical Society Series B},
-\strong{65}, 521--543.
+Keef, C., Papastathopoulos, I. and Tawn, J. A. (2013) Estimation of the
+conditional distribution of a multivariate variable given that one of its
+components is large: Additional constraints for the Heffernan and Tawn model.
+\emph{Journal of Multivariate Analysis}, \strong{115}, 396–404.
 
-Lugrin, T., Davison, A. C. and Tawn, J. A. (2016) Bayesian uncertainty
-management in temporal dependence of extremes. \emph{Extremes}, \strong{19}, 491--515.
+Coles, S., Heffernan, J. E. and Tawn, J. A. (1999) Dependence measures for
+extreme value analyses. \emph{Extremes}, \strong{2}, 339--365.
 }
 \seealso{
 \code{\link[=thetafit]{thetafit()}}, \code{\link[=chifit]{chifit()}}, \code{\link[=depfit]{depfit()}}

@@ -1,0 +1,216 @@
+---
+title: "A Bayesian Approach to Fitting Time Series Extremal Dependence"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{A Bayesian Approach to Fitting Time Series Extremal Dependence}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, include = FALSE}
+library(tsxtreme)
+```
+
+## Motivation
+
+Classical approaches to fitting extremes of time series with short-term
+dependence use a pre-processing stage where independent extremes are filtered
+out of the original series. A well-known approach is the peaks-over-threshold
+method which typically involves
+
+1. selecting a high threshold $u$,
+2. choosing a minimal distance (*run-length*) beyond which excesses of $u$ are
+  considered independent,
+3. defining clusters of excesses based on this run-length,
+4. making inference with the cluster maxima only.
+
+This approach provides a simple procedure to estimating the marginal
+distribution of a series, but it lacks interpretation of the extremal
+dependence of the series; it is a multi-step procedure which does not recognise
+uncertainty in the definition of the clusters; the clustering procedure itself
+is arbitrary and can yield badly-biased estimates of risk measures; it discards
+all observations below $u$ and all exceedances of $u$ smaller than their
+cluster's maximum.
+
+We model the sub-asymptotic dependence in stationary time series using the
+conditional approach to extreme values of Heffernan and Tawn (2004, JRSSB)
+formalised by Heffernan and Resnick (2007, Ann. Appl. Probab.).
+
+The Heffernan--Tawn conditional formulation for a stationary time series
+$(X_t)$ with Laplace marginal distribution states that for a large enough
+threshold \eqn{u} there exist scale parameters $-1 \le\alpha_j\le 1$ and
+$0 \le \beta_j \le 1$ such that
+$${\rm Pr}\left(\frac{X_j-\alpha_j X_0}{(X_j)^{\beta_j}} < z_j, j=1,\ldots,m \mid X_0 > u\right) = H(z_1,\ldots,z_m),$$
+with $H$ non-degenerate; the equality holds exactly only when $u$
+tends to infinity.
+
+This approach
+has the advantage of covering a much broader class of extremal and asymptotic
+dependence structures than standard extreme value models, in particular
+situations where dependence at observed levels decays to asymptotic
+independence, defined as
+$$\lim_{v\rightarrow 1}{\rm Pr}\{F_Y(Y) > v\mid F_X(X) > v\} = 0,\quad X\sim F_X,\ Y\sim F_Y,$$
+as is often experienced in applications.
+
+However the inference approach used to fit the conditional model involve a
+stepwise procedure where $\alpha$ and $\beta$ are first estimated by maximising
+a likelihood under the working assumption of $H(z)$ being a Gaussian
+distribution function. The residual distribution $H(z)$ is estimated in a
+second step as the empirical distribution using the estimates $\hat\alpha$ and
+$\hat\beta$ and the fitted residuals $\hat z$.
+
+We propose a semiparametric Bayesian approach where the whole model can be
+estimated at once, using a flexible representation for $H(z)$, namely a mixture
+of an arbitrary number of Gaussian distributions. This has the advantage of
+providing coverage intervals for $\alpha$ and $\beta$ that incorporate the
+uncertainty in estimating the posterior distribution of the distribution
+$H(z)$; it also provides a coverage interval for the distribution $H(z)$.
+Risk measures can also be derived from posterior samples, thus providing 
+posterior estimates and a consistent evaluation of their uncertainty.
+
+## Example on simulated data
+
+Generate some data from a stationary AR(1) and a Gaussian dependence structure.
+
+```{r fig.width=6.5, include=TRUE}
+dep  <- 0.7
+n    <- 10000
+data <- numeric(n)
+data[1] <- rnorm(1)
+for (i in 2:n) {
+  data[i] <- rnorm(1, mean = dep*data[i-1], sd = 1-dep^2)
+}
+par(mfrow = c(1, 2))
+plot(data, type = "l", main = "AR(1)", lwd = 0.25)
+hist(data, breaks = 32, freq = FALSE, main = "Marginal distribution",
+     col = "white", ylim = c(0, dnorm(0, sd = dep)))
+x_grid <- seq(-2, 2, 0.05)
+lines(x_grid, dnorm(x_grid, sd = dep), col = "forestgreen", lwd = 2)
+```
+
+The series in `data` has Gaussian marginal distribution; we can transform `data`
+to exponential scale so that the GPD marginal model is exact for any threshold.
+
+```{r, include=TRUE}
+data <- qexp(pnorm(data, sd = dep))
+u_gpd <- 0.9
+```
+
+We can now compare different estimators of the sub-asymptotic extremal index
+
+$$\theta(x,m) = {\rm Pr}(X_1 < x,\ldots,X_m < x\mid X_0 > x), \quad x \geq u,$$
+
+converging to the extremal index $\theta$ as $x,m\rightarrow\infty$ appropriately.
+
+The `tsxtreme` package provides three different estimators of $\theta(x,m)$, namely
+
+1. an empirical estimator based on the run-length $m$ with the routine `thetaruns()`,
+2. an estimator that requires multi-step inference with `theta2fit()`,
+3. an estimator based on our Bayesian semi-parametric approach with `thetafit()`.
+
+A simple comparison of those three estimators can be carried out as follows,
+
+```{r, include = TRUE}
+x_empirical <- seq(u_gpd, 0.99, 0.005)
+x_model     <- c(x_empirical, seq(0.995, 0.9999, length.out=10))
+theta_empirical <- thetaruns(ts = data, u_mar = u_gpd, probs = x_empirical)
+theta_2step     <- theta2fit(ts = data, u_mar = u_gpd, u_dep = 0.98, probs = x_model)
+# theta_Bayesian  <- thetafit(ts = data, u_mar = u_gpd, u_dep = 0.98, probs = x_model)
+```
+
+The last line can take quite a bit of time and we commented it out. We can
+change the default MCMC specifications of `bayesparams()`, e.g.,
+
+```{r}
+my_par <- bayesparams(maxit = 3000, burn = 1000, adapt = 1000, thin = 2, mode = 2)
+```
+
+The `bayesparams` object also provides access to tuning prior
+hyperparameters, proposal standard deviations, verbosity, etc.
+From version 0.4.0, the **new** input argument `start_ab`
+provides an option to choose starting values for $\alpha$ and $\beta$ wisely,
+i.e., using their maximum likelihood estimates. This can potentially save up
+to a few thousand iterations.
+
+Let's now run this code!
+```{r, fig.width = 6.5, include = TRUE}
+n_sweeps <- 200 # pick MCMC iterations, i.e., distribution
+n_replicates <- 200 # draw samples from each distribution
+theta_Bayesian  <- thetafit(ts = data,
+                            u_mar = u_gpd,
+                            u_dep = 0.98,
+                            probs = x_model,
+                            par = my_par,
+                            R = n_replicates,
+                            S = n_sweeps)
+par(mfrow = c(1, 3))
+max_emp <- qexp(max(x_empirical)) # probability to exponential scale
+plot(theta_empirical, main = "Empirical")
+plot(theta_2step, main = "Stepwise Inference")
+abline(v = max_emp, lty = "dotted")
+plot(theta_Bayesian, main = "Semi-parametric Inference")
+abline(v = max_emp, lty = "dotted")
+```
+To the curious reader: `thetaruns()` and `theta2fit()` can also compute
+confidence intervals using a block bootstrap (argument `R_boot`). This is not
+done here as it is resource-intensive and to underline how the coverage interval
+in the Bayesian approach naturally arises as a by-product of the estimation.
+
+## Package structure
+
+The package can be divided in three main parts, corresponding to the three
+estimators listed above, each providing different routines that have not
+necessarily their corresponding counterparts in the other approaches. The
+methods related to the semiparametric approach are the most complete.
+
+* empirical
+    + `thetaruns()` to compute the runs estimator for the extremal index $\theta$;
+* stepwise
+    + `dep2fit()` to fit the conditional tail model of Heffernan and Tawn using the standard stepwise approach;
+    + `theta2fit()` to compute the sub-asymptotic extremal index $\theta(x,m)$; it can use the output of a previous call to `dep2fit()`;
+* Bayesian
+    + `depfit()` to fit the conditional tail model of Heffernan and Tawn using our Bayesian semi-parametric approach; additional structure can be imposed to fit first order Markov chains;
+    + `thetafit()` to compute posterior samples of the sub-asymptotic extremal index $\theta(x,m)$; it can use the output of a previous call to `depfit()` to avoid re-running resource-intensive MCMC computations;
+    + `chifit()` to compute posterior samples of the sub-asymptotic measure of extremal $\chi_t(x)$ defined below; it can use the output of a previous call to `depfit()`.
+
+`plot()` functions are available for viewing outputs from all routines listed above. The method `chifit()` refers to the sub-asymptotic measure of extremal dependence at lag $t$ for a stationary time series $(X_t)$
+
+$$\chi_t(x) = {\rm Pr}(X_t > x\mid X_0 > x).$$
+
+## New in version 0.4.0
+
+From version 0.4.0 of `tsxtreme`, the dot-notation used in several arguments
+and elements of objects are only available for backward compatibility.
+Deprecation warnings are issued correspondingly, and objects returned by the
+methods in the package do not
+include elements using dot-notation any more, so pay attention if you process
+the output of `depfit()` for example, with your own code.
+The underscore `_` is preferred over the dot `.` and
+will be the only available notation in a future version of the package. For
+example, the `bayesparams` element `batch.size` is deprecated in favour of
+`batch_size`. The marginal and dependence thresholds specified via
+`u.mar` and `u.dep` respectively in methods such as `depfit()`/`dep2fit()`
+and `thetafit()`; they are now soft-deprecated in favour of `u_mar` and `u_dep`.
+
+Additional `r lifecycle::badge('experimental')` methods are made available
+to the user in version 0.4.0, namely
+
+* `conditions_bounds()` to compute the bounds on $(\alpha,\beta)$ given a
+  data set (see Keef et al. 2013),
+* `residual_densities()` to evaluate the residual density function $h(z)=H'(z)$
+  and trim the x-axis values to where most the probability mass lies,
+* `residual_distributions()` to evaluate the residual distribution $H(z)$ and
+  trim the x-axis values to the most interesting part of the function.
+
+No particular user input validation is performed in those methods, as these
+methods were intended for internal use only.
+As they could turn out to be useful for customised plotting, they are
+now exported to the package namespace as is.
+Be careful and provide the required arguments in the expected format.

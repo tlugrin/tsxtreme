@@ -72,7 +72,6 @@
 #' @param method a character string defining the method used to estimate the
 #'   dependence measure; either \code{"prop"} for proportions or \code{"MCi"}
 #'   for Monte Carlo integration (see details).
-#' @param silent logical (\code{FALSE}); verbosity.
 #' @param fit logical; \code{TRUE} means that the dependence model must be
 #'   fitted and the values in \code{par} are used to calibrate the MCMC.
 #'   Otherwise `prev_fit` is required and provides the necessary dependence fit.
@@ -127,7 +126,6 @@ thetafit <- function(ts,
                      probs = seq(u_dep, 0.9999, length.out = 30),
                      method_mar = c("mle","mom","pwm"),
                      method = c("prop","MCi"),
-                     silent = FALSE,
                      fit = TRUE,
                      prev_fit = bayesfit(),
                      par = bayesparams(),
@@ -157,7 +155,7 @@ thetafit <- function(ts,
   }
   data_up <- format_ts(ts=ts, u_mar=u_mar, u_dep=u_dep, method=method_mar,
                        nlag=nlag, lapl=lapl)
-  ret <- etfit(data=data_up, R=R, S=S, probs=probs, method=method, silent=silent,
+  ret <- etfit(data=data_up, R=R, S=S, probs=probs, method=method,
               fit=fit, prev_fit=prev_fit, par=par, submodel=submodel, levels=levels)
   mesh_O     <- scale_to_original(p=probs, ts=ts, u=u_mar, gpd_pars=gpd(ts, u=u_mar, method=method_mar)$pars)
   ret$levels <- mesh_O
@@ -167,7 +165,6 @@ thetafit <- function(ts,
 #' @rdname thetafit
 #' @keywords internal
 etfit <- function(data, R, S, probs, method,
-                  silent,
                   fit, prev_fit, par, submodel, levels) {
   data_up <- data
   n       <- dim(data_up)[1]
@@ -190,7 +187,7 @@ etfit <- function(data, R, S, probs, method,
                  batch_size = par$batch_size,
                  mode = par$mode,
                  submodel = submodel)
-    if (!silent)
+    if (par$mode < 2)
       print(paste("Fit of DDP done. Mean value for alpha & beta:",
                   signif (apply(fit$a, 2, mean),3),"and",
                   signif (apply(fit$b, 2, mean),3)))
@@ -251,7 +248,7 @@ etfit <- function(data, R, S, probs, method,
   ret$theta <- th
   ret$distr <- distr
   time <- toc(silent=TRUE)
-  if (!silent) {
+  if (par$mode < 2) {
     print(paste("Time elapsed on estimating theta: ",
                 time%/%60," min ",round(time-60*(time%/%60), 1)," sec.", sep=""))
     print(paste("Time per x-value: ",round(time/nbr_vert, 1)," sec.", sep=""))
@@ -276,7 +273,6 @@ chifit <- function(ts,
                    probs = seq(u_dep, 0.9999, length.out = 30),
                    method_mar = c("mle","mom","pwm"),
                    method = c("prop","MCi"),
-                   silent = FALSE,
                    fit = TRUE,
                    prev_fit = bayesfit(),
                    par = bayesparams(),
@@ -329,7 +325,7 @@ chifit <- function(ts,
                  batch_size = par$batch_size,
                  mode = par$mode,
                  submodel = submodel)
-    if (!silent)
+    if (par$mode < 2)
       print(paste("Fit of DDP done. Mean value for alpha & beta:",
                   signif (apply(fit$a, 2, mean),3),"and",
                   signif (apply(fit$b, 2, mean),3)))
@@ -364,7 +360,6 @@ chifit <- function(ts,
                       S = S,
                       probs = mesh,
                       method=method,
-                      silent = silent,
                       fit = FALSE,
                       prev_fit = subfit,
                       submodel = submodel,
@@ -382,7 +377,7 @@ chifit <- function(ts,
   ret$distr <- distr
   ## print time
   time <- toc(silent=TRUE)
-  if (!silent) {
+  if (par$mode < 2) {
     print(paste("Time elapsed on estimating chi: ",
                 time%/%60," min ",round(time-60*(time%/%60), 1)," sec.", sep=""))
     print(paste("Time per x-value: ",round(time/nbr_vert, 1)," sec.", sep=""))

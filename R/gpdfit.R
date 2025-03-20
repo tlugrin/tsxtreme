@@ -4,16 +4,16 @@
 ## List of functions: - nllh_gpd
 ##                    - grad_gpd
 ##                    - nllh_gpd_0
-##                    - gpd_mle
-##                    - gpd_mom
-##                    - gpd_pwm
+##                    - gpd.mle
+##                    - gpd.mom
+##                    - gpd.pwm
 ##################################################
 
 ##################################################
 ## LIKELIHOOD-BASED GPD FIT
 #' Negative log-likelihood and its gradient for the GPD
 #' 
-#' Called by [gpd_mle()], not exposed to the user.
+#' Called by [gpd.mle()], not exposed to the user.
 #' 
 #' @param par vector of 2 reals, scale-shape.
 #' @param u scalar, threshold given as a quantile.
@@ -53,7 +53,7 @@ grad_gpd <- function(par, u, x){
 
 #' Negtive log-likelihood for the GPD with null shape
 #' 
-#' Called by [gpd_mle()] when `shape_null_hyp==TRUE`, not exposed to the user.
+#' Called by [gpd.mle()] when `shape_null_hyp==TRUE`, not exposed to the user.
 #' 
 #' @param par scalar, scale (shape is assumed 0).
 #' @param u scalar, threshold given as a quantile.
@@ -76,7 +76,7 @@ nllh_gpd_0 <- function(par, u, x){
 #' @returns A list, threshold - MLEs - log-likelihood - standard deviations -
 #'   covariance matrix.
 #' @keywords internal
-gpd_mle <- function(ts, u, hessian=FALSE){
+gpd.mle <- function(ts, u, hessian=FALSE){
   opt <- optim(c(sd(ts),0.1), fn=nllh_gpd, gr=grad_gpd, u=u, x=ts,
                hessian=hessian)
   ret <- list(u=u, pars=opt$par, llh=-opt$value)
@@ -97,7 +97,7 @@ gpd_mle <- function(ts, u, hessian=FALSE){
 #' @param  u scalar, threshold given as a quantile.
 #' @returns A list, threshold - MOM estimates.
 #' @keywords internal
-gpd_mom <- function(ts, u){
+gpd.mom <- function(ts, u){
   ts <- ts-u
   m <- mean(ts)
   s <- var(ts)
@@ -106,9 +106,9 @@ gpd_mom <- function(ts, u){
   return(list(u = u, pars = c(scale, shape)))
 }
 
-#' @rdname gpd_mom
+#' @rdname gpd.mom
 #' @keywords internal
-gpd_pwm <- function(ts, u){
+gpd.pwm <- function(ts, u){
   ts <- ts-u
   ts <- sort(ts, decreasing = FALSE)
   n  <- length(ts)
@@ -124,7 +124,7 @@ gpd_pwm <- function(ts, u){
 ## GENERIC FUNCTION
 #' GPD fit wrapper
 #' 
-#' @inheritParams gpd_mom
+#' @inheritParams gpd.mom
 #' @keywords internal
 gpd <- function(ts, u, method){
   fct_name <- paste("gpd.", method[1], sep="")

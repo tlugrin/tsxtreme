@@ -21,14 +21,19 @@ consider; starts at 1}
 A list with two elements, x and y, where x is a subset of \code{grid}.
 }
 \description{
-Helper function for plotting the mixture density or distribution function
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} Helper function for plotting the mixture density or distribution function
 of the residuals as expressed in the conditional tail model. Given a broad
 range of x-values, trims the left and right tails to cover the centre of the
 distribution.
 }
 \details{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} Initially intended for internal use
+Initially intended for internal use
 only, but exposed to the user as it may prove useful to adjust plots to
 different situations. Only minimal checks are performed on the inputs.
 You have been warned!
+
+The logic behind these methods is to provide a very wide and coarse grid
+first, e.g., \code{seq(-100, 100, 1)} and to use the returned element \code{x} to
+build a finer grid, say, \code{seq(min(x), max(x), by = 0.1)} to be used in a
+subsequent call to the same method.
 }

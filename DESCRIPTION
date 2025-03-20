@@ -2,7 +2,7 @@ Package: tsxtreme
 Type: Package
 Title: Bayesian Modelling of Extremal Dependence in Time Series
 Version: 0.4.0
-Date: 2025-03-YY
+Date: 2025-03-20
 Authors@R: person("Thomas", "Lugrin", role = c("aut", "cre", "cph"), email = "thomas.lugrin@alumni.epfl.ch")
 Imports: 
     evd,
@@ -14,7 +14,11 @@ Imports:
     lifecycle
 Roxygen: list(markdown = TRUE)
 Encoding: UTF-8
-Description: Characterisation of the extremal dependence structure of time series, avoiding pre-processing and filtering as done typically with peaks-over-threshold methods. It uses the conditional approach of Heffernan and Tawn (2004) <DOI:10.1111/j.1467-9868.2004.02050.x> which is very flexible in terms of extremal and asymptotic dependence structures, and Bayesian methods improve efficiency and allow for deriving measures of uncertainty. For example, the package contains a routine to estimate the extremal index, a measure related to the size of clusters of extreme values in time, and this same routine also gives access to the raw samples from the extremal index posterior distribution.
+Description: Characterisation of the extremal dependence structure of time series, avoiding pre-processing and filtering as done typically with peaks-over-threshold methods. It uses the conditional approach of Heffernan and Tawn (2004) <DOI:10.1111/j.1467-9868.2004.02050.x> which is very flexible in terms of extremal and asymptotic dependence structures, but requires a stepwise inference approach. Following Lugrin et al. (2016) <DOI:10.1007/s10687-016-0258-0> this package implements a semiparametric Bayesian method to improve efficiency and allow for deriving measures of uncertainty consistently. For example, the package contains a routine to estimate the extremal index, a measure related to the size of clusters of extreme values in time, and this same routine also gives access to the raw samples from the extremal index posterior distribution.
 License: GPL (>=2)
 NeedsCompilation: yes
 RoxygenNote: 7.3.2
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

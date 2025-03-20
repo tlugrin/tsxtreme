@@ -212,16 +212,16 @@ htfit <- function(data,
            as.double(start_b))
   ## format C output
   ret <- bayesfit()
-  ret$a    <- matrix(fit[[18]], nrow = tr_len, ncol = nlag)
-  ret$b    <- matrix(fit[[19]], nrow = tr_len, ncol = nlag)
-  ret$sd   <- array(fit[[20]], dim = c(tr_len, comp_saved, nlag))
-  ret$mean <- array(fit[[21]], dim = c(tr_len, comp_saved, nlag))
-  ret$w       <- matrix(fit[[22]], nrow = tr_len, ncol = comp_saved)
-  ret$prec    <- fit[[23]]
-  ret$ci      <- matrix(fit[[24]], nrow = tr_len, ncol = n)
-  ret$noo     <- matrix(fit[[25]], nrow = tr_len, ncol = comp_saved)
-  ret$noc     <- fit[[26]]
-  ret$prop_sd <- array(fit[[27]], dim=c(tr_len, 8, nlag))
+  ret$a    <- matrix(fit[[19]], nrow = tr_len, ncol = nlag)
+  ret$b    <- matrix(fit[[20]], nrow = tr_len, ncol = nlag)
+  ret$sd   <- array(fit[[21]], dim = c(tr_len, comp_saved, nlag))
+  ret$mean <- array(fit[[22]], dim = c(tr_len, comp_saved, nlag))
+  ret$w       <- matrix(fit[[23]], nrow = tr_len, ncol = comp_saved)
+  ret$prec    <- fit[[24]]
+  ret$ci      <- matrix(fit[[25]], nrow = tr_len, ncol = n)
+  ret$noo     <- matrix(fit[[26]], nrow = tr_len, ncol = comp_saved)
+  ret$noc     <- fit[[27]]
+  ret$prop_sd <- array(fit[[28]], dim=c(tr_len, 8, nlag))
   ret$len <- tr_len
   ret$nlag <- nlag
   ## add names
