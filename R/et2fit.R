@@ -192,7 +192,7 @@ theta2fit <- function(ts,
 #' @param method (vector of) string(s), either "prop" or "MCi" for the method
 #'   of proportions (empirical approach) or Monte-Carlo integration.
 #' @returns Estimate of \eqn{\theta(x,m)} at each value of \eqn{x} given by
-#'   [mesh].
+#'   `mesh`.
 #' @keywords internal
 th2est <- function(fit, sim_U, sim_Z, mesh, nlag, method) {
   n_vert <- length(mesh)
@@ -286,7 +286,7 @@ thboot <- function(par, block_length, R, method, levels) {
 #' Called by [thboot()], not exposed to the user.
 #' 
 #' @inheritParams thboot
-#' @returns A matrix, [R] columns containing the block bootstrap samples of [ts]
+#' @returns A matrix, `R` columns containing the block bootstrap samples of `ts`
 #' @keywords internal
 blockboot <- function(ts, block_length, R) {
   rest <- length(ts)%%block_length

@@ -159,8 +159,8 @@ thetaruns <- function(ts,
 #' 
 #' @param data matrix, lags matrix of a time series
 #' @param mesh vector, x in theta(x,m) on Laplace scale
-#' @returns list, estimates of theta across [mesh] - nbr of exceedances
-#' across [mesh]
+#' @returns list, estimates of theta across `mesh` - nbr of exceedances
+#' across `mesh`.
 #' @keywords internal
 compute_runs <- function(data, mesh) {
   nbr_vert <- length(mesh)

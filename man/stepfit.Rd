@@ -2,15 +2,21 @@
 % Please edit documentation in R/classes.R
 \name{stepfit}
 \alias{stepfit}
+\alias{is.stepfit}
 \alias{plot.stepfit}
 \title{Estimates from the stepwise fit}
 \usage{
 stepfit()
 
+is.stepfit(x)
+
 \method{plot}{stepfit}(x, ...)
 }
 \arguments{
 \item{x}{an arbitrary \R object.}
+
+\item{...}{other parameters to be passed through to printing or plotting
+functions.}
 }
 \value{
 An object of class "stepfit" with the following elements:

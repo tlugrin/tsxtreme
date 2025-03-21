@@ -7,11 +7,12 @@
 conditions_verify(a, b, p, v = -log(2 * (1 - 0.99999999)), data)
 }
 \arguments{
-\item{a}{scalar, alpha parameter, in \link{-1,1}}
+\item{a}{scalar, alpha parameter, in \eqn{[-1,1]}}
 
-\item{b}{scalar, beta parameter, in \link{0,1}}
+\item{b}{scalar, beta parameter, in \eqn{[0,1]}}
 
-\item{p}{scalar, probability (to compute quantiles of residual distribution), in \link{0,1}}
+\item{p}{scalar, probability (to compute quantiles of residual distribution),
+in \eqn{[0,1]}}
 
 \item{v}{scalar, threshold, recommended as beyond the maximum observation}
 

@@ -1,7 +1,12 @@
-## Bug fix of v0.3.4
-This is a bug fix to version 0.3.4. In this fix I have:
+## Minor release
+This is a new release adding functionality over version 0.3.4.
+In this release I have:
 
-* fixed an error due to the usage of _R_CXX_USE_NO_REMAP_=true becoming standard
+* added a few options to the main methods
+* added a few methods to the user interface
+* fixed a bug in the computation of the Monte-Carlo integration
+* updated documentation throughout the package and migrated it to roxygen format
+* updated code to conform to modern R conventions and soft-deprecated the older notation
 
 ## Test environments
 * Ubuntu 24.04 local install, R 4.3.3 (2024-02-29)

@@ -17,7 +17,6 @@ thetafit(
   probs = seq(u_dep, 0.9999, length.out = 30),
   method_mar = c("mle", "mom", "pwm"),
   method = c("prop", "MCi"),
-  silent = FALSE,
   fit = TRUE,
   prev_fit = bayesfit(),
   par = bayesparams(),
@@ -29,7 +28,7 @@ thetafit(
   prev.fit = deprecated()
 )
 
-etfit(data, R, S, probs, method, silent, fit, prev_fit, par, submodel, levels)
+etfit(data, R, S, probs, method, fit, prev_fit, par, submodel, levels)
 
 chifit(
   ts,
@@ -42,7 +41,6 @@ chifit(
   probs = seq(u_dep, 0.9999, length.out = 30),
   method_mar = c("mle", "mom", "pwm"),
   method = c("prop", "MCi"),
-  silent = FALSE,
   fit = TRUE,
   prev_fit = bayesfit(),
   par = bayesparams(),
@@ -88,8 +86,6 @@ methods. Defaults to \code{"mle"}.}
 \item{method}{a character string defining the method used to estimate the
 dependence measure; either \code{"prop"} for proportions or \code{"MCi"}
 for Monte Carlo integration (see details).}
-
-\item{silent}{logical (\code{FALSE}); verbosity.}
 
 \item{fit}{logical; \code{TRUE} means that the dependence model must be
 fitted and the values in \code{par} are used to calibrate the MCMC.

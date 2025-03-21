@@ -8,17 +8,17 @@ scale_to_original(p, ts, u, gpd_pars)
 }
 \arguments{
 \item{p}{(vector of) reals, (a range of) probabilities which to transform to
-original \link{ts} scale.}
+original \code{ts} scale.}
 
 \item{ts}{vector of reals, time series in original scale.}
 
 \item{u}{scalar, threshold given as a probability.}
 
 \item{gpd_pars}{vector of 2 reals, scale-shape parameters of the GPD fitted
-to \link{ts}.}
+to \code{ts}.}
 }
 \value{
-A vector of the same length as \link{p} on \link{ts} scale.
+A vector of the same length as \code{p} on \code{ts} scale.
 }
 \description{
 Called by \code{\link[=thetafit]{thetafit()}}, \code{\link[=chifit]{chifit()}}, \code{\link[=theta2fit]{theta2fit()}}

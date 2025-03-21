@@ -27,6 +27,8 @@
 #' Create, test or show objects of class "stepfit".
 #' 
 #' @param x an arbitrary \R object.
+#' @param ... other parameters to be passed through to printing or plotting
+#'   functions.
 #' @returns An object of class "stepfit" with the following elements:
 #'   \item{a, b }{Heffernan--Tawn model parameters of length `nlag`; \eqn{\alpha} controls the conditional extremal expectation, while \eqn{\beta} controls the conditional extremal expectation and variance.}
 #'   \item{res }{matrix of fitted residuals with `nlag` columns.}
@@ -42,6 +44,7 @@ stepfit <- function() {
 }
 
 # validator
+#' @rdname stepfit
 #' @export
 is.stepfit <- function(x) {
   if (length(names(x))) {
@@ -125,6 +128,8 @@ plot.stepfit <- function(x, ...) {
 #' @param which a vector with values in {1,2,3} where 1 is to plot residual
 #'   density functions, 2 is for residual distribution functions and 3 is for
 #'   a contour plot of the posterior distribution function of (alpha, beta).
+#' @param ... other parameters to be passed through to printing or plotting
+#'   functions.
 #' 
 #' @returns An object of class "bayesfit" with MCMC traces for:
 #'   \item{a, b }{Heffernan--Tawn model parameters (matrices).}
@@ -152,6 +157,7 @@ bayesfit <- function() {
 }
 
 ## validator
+#' @rdname bayesfit
 #' @export
 is.bayesfit <- function(x) {
   if (length(names(x))) {
@@ -411,6 +417,12 @@ residual_distributions <- function(x, lag, grid) {
 #'   be set? (see Details) Defaults to `TRUE`.
 #' @param mode verbosity; 0 for debug mode, 1 (default) for standard output,
 #'   and 2 for silent.
+#' @param prop.a,prop.b `r lifecycle::badge('deprecated')` use `prop_a` and
+#'   `prop_b` instead.
+#' @param prior.mu,prior.nu,prior.eta `r lifecycle::badge('deprecated')` use
+#'   `prior_mu`, `prior_nu` and `prior_eta` instead.
+#' @param comp.saved,batch.size `r lifecycle::badge('deprecated')` use
+#'   `comp_saved` and `batch_size` instead.
 #' @returns An object of class "bayesparams".
 #' @seealso [bayesfit()], [depmeasure()]
 #' @examples
@@ -486,6 +498,7 @@ bayesparams <- function(prop_a = 0.02,
             adapt = adapt,
             batch_size = batch_size,
             start_ab = start_ab[1],
+            conditions = conditions,
             mode = mode)
   class(x) <- "bayesparams"
   if (is.bayesparams(x)) return(x)
@@ -493,6 +506,7 @@ bayesparams <- function(prop_a = 0.02,
 }
 
 ## validator
+#' @rdname bayesparams
 #' @export
 is.bayesparams <- function(x) {
   if (length(names(x))) {
@@ -509,7 +523,7 @@ is.bayesparams <- function(x) {
     }
     names_bp <- c("prop_a","prop_b","prior_mu","prior_nu","prior_eta",
                   "trunc","comp_saved","maxit","burn","thin",
-                  "adapt","batch_size","start_ab","mode")
+                  "adapt","batch_size","start_ab","mode","conditions")
     st_ab <- c("guesstimate", "prior")
     conds <- names_bp %in% names(x)
     if (all(conds)) {
@@ -523,7 +537,8 @@ is.bayesparams <- function(x) {
         length(x$thin)==1 && is_int(x$burn) && length(x$adapt)==1 && is_int(x$adapt) &&
         length(x$batch_size)==1 && is_int(x$batch_size) &&
         is.character(x$start_ab) && x$start_ab %in% st_ab &&
-        length(mode)==1 && x$mode %in% c(0,1,2)
+        length(x$conditions)==1 && is.logical(x$conditions) &&
+        length(x$mode)==1 && x$mode %in% c(0,1,2)
       return(inherits(x, "bayesparams") && conds)
     }     
   }
@@ -545,6 +560,7 @@ summary.bayesparams <- function(object, ...) {
     cat("proposal for alpha              ",object$prop_a,"\n", sep="")
     cat("proposal for beta               ",object$prop_b,"\n", sep="")
     cat("start values for alpha and beta ",ifelse(object$start_ab[1]=="prior", "drawn from prior", "guesstimated from 2-step fit"),"\n", sep="")
+    cat("conditions on alpha and beta    ",ifelse(object$conditions, "yes", "no"),"\n", sep = "")
     cat("prior par. for means            (",object$prior_mu[1],", ",object$prior_mu[2],")\n", sep="")
     cat("prior par. for sd               (",object$prior_nu[1],", ",object$prior_nu[2],")\n", sep="")
     cat("prior par. for precision par.   (",object$prior_eta[1],", ",object$prior_eta[2],")\n", sep="")
@@ -570,6 +586,8 @@ summary.bayesparams <- function(object, ...) {
 #' 
 #' @param type one of "theta", "chi", "steptheta" or "runs".
 #' @param x an arbitrary \R object.
+#' @param ... other parameters to be passed through to printing or plotting
+#'   functions.
 #' @returns An object of class "depmeasure" whose exact structure depends on
 #'   its type. All types contain the following elements,
 #'   \item{probs }{probability levels at which the dependence measure was estimated.}
@@ -588,7 +606,6 @@ summary.bayesparams <- function(object, ...) {
 #'  If \code{type} is "runs",
 #'  \item{theta }{a matrix with the (empirical) runs estimator estimate and confidence intervals (columns) at the given \code{levels} (rows).}
 #'  \item{nbr_exc }{the number of exceedances corresponding to the \code{levels}.}
-#' @seealso [depmeasures()]
 #' @export
 depmeasure <- function(type=c("theta","chi","steptheta","runs")) {
   z_mat <- matrix(0, nrow=1, ncol=1)
@@ -614,6 +631,7 @@ depmeasure <- function(type=c("theta","chi","steptheta","runs")) {
 }
 
 ## validator
+#' @rdname depmeasure
 #' @export
 is.depmeasure <- function(x) {
   if (length(names(x))) {

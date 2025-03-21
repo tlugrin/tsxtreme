@@ -12,8 +12,8 @@ compute_runs(data, mesh)
 \item{mesh}{vector, x in theta(x,m) on Laplace scale}
 }
 \value{
-list, estimates of theta across \link{mesh} - nbr of exceedances
-across \link{mesh}
+list, estimates of theta across \code{mesh} - nbr of exceedances
+across \code{mesh}.
 }
 \description{
 Called by \code{\link[=thetaruns]{thetaruns()}}.

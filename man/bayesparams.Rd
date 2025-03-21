@@ -2,6 +2,7 @@
 % Please edit documentation in R/classes.R
 \name{bayesparams}
 \alias{bayesparams}
+\alias{is.bayesparams}
 \title{Parameters for the Bayesian semi-parametric approach}
 \usage{
 bayesparams(
@@ -28,6 +29,8 @@ bayesparams(
   comp.saved = deprecated(),
   batch.size = deprecated()
 )
+
+is.bayesparams(x)
 }
 \arguments{
 \item{prop_a, prop_b}{standard deviation for the Gaussian proposal
@@ -71,6 +74,15 @@ be set? (see Details) Defaults to \code{TRUE}.}
 
 \item{mode}{verbosity; 0 for debug mode, 1 (default) for standard output,
 and 2 for silent.}
+
+\item{prop.a, prop.b}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} use \code{prop_a} and
+\code{prop_b} instead.}
+
+\item{prior.mu, prior.nu, prior.eta}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} use
+\code{prior_mu}, \code{prior_nu} and \code{prior_eta} instead.}
+
+\item{comp.saved, batch.size}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} use
+\code{comp_saved} and \code{batch_size} instead.}
 
 \item{x}{an arbitrary \R object.}
 }

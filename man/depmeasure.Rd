@@ -2,10 +2,13 @@
 % Please edit documentation in R/classes.R
 \name{depmeasure}
 \alias{depmeasure}
+\alias{is.depmeasure}
 \alias{plot.depmeasure}
 \title{Dependence measures estimates}
 \usage{
 depmeasure(type = c("theta", "chi", "steptheta", "runs"))
+
+is.depmeasure(x)
 
 \method{plot}{depmeasure}(x, ...)
 }
@@ -13,6 +16,9 @@ depmeasure(type = c("theta", "chi", "steptheta", "runs"))
 \item{type}{one of "theta", "chi", "steptheta" or "runs".}
 
 \item{x}{an arbitrary \R object.}
+
+\item{...}{other parameters to be passed through to printing or plotting
+functions.}
 }
 \value{
 An object of class "depmeasure" whose exact structure depends on
@@ -37,7 +43,4 @@ If \code{type} is "runs",
 \description{
 Test or show objects of class "depmeasure", a structure for all dependence
 measures covered in this package.
-}
-\seealso{
-\code{\link[=depmeasures]{depmeasures()}}
 }

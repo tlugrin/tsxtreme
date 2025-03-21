@@ -8,7 +8,7 @@
 #' The conditional tail model residual distribution (stepwise)
 #' 
 #' The `p_res2` method is called by [th2est()], the `q_res2` method is called
-#' by [verifies_conditions()] in order to get quantiles of the empirical
+#' by [conditions_verify()] in order to get quantiles of the empirical
 #' distribution function of the residual distribution given
 #' \eqn{(\alpha,\beta)}. Not exposed to the user.
 #' 
@@ -16,9 +16,9 @@
 #'   function of the residuals.
 #' @param sorted_res vector, empirical distribution function.
 #' @param p scalar, probability (to compute quantiles of residual distribution),
-#'   in [0,1].
-#' @param a scalar, alpha parameter, in [-1,1].
-#' @param b scalar, beta parameter, in [0,1].
+#'   in \eqn{[0,1]}.
+#' @param a scalar, alpha parameter, in \eqn{[-1,1]}.
+#' @param b scalar, beta parameter, in \eqn{[0,1]}.
 #' @param data bivariate vector, \eqn{(X,Y)} with \eqn{Y | X>u}.
 #' @returns For `p_res2`: a vector of the same length as `res`, distribution of
 #'   the residuals evaluated in `res`. For `q_res2`: a quantile of the residual

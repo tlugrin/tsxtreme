@@ -25,13 +25,14 @@ moments or "pwm" for proba weighted moments}
 
 \item{nlag}{integer, number of lags to be considered.}
 
-\item{lapl}{logical, is \link{ts} on Laplace scale already?}
+\item{lapl}{logical, is \code{ts} on Laplace scale already?}
 }
 \value{
-A matrix with \link{nlag}+1 columns on the Laplace scale, with first
+A matrix with \code{nlag}+1 columns on the Laplace scale, with first
 column above threshold.
 }
 \description{
-Called by \code{\link[=etfit]{etfit()}} and \code{\link[=et2fit]{et2fit()}}, not exposed to the user.
+Called by \code{\link[=thetafit]{thetafit()}}, \code{\link[=depfit]{depfit()}}, \code{\link[=theta2fit]{theta2fit()}}, etc.,
+not exposed to the user.
 }
 \keyword{internal}

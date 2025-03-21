@@ -13,7 +13,7 @@ blockboot(ts, block_length, R)
 intervals.}
 }
 \value{
-A matrix, \link{R} columns containing the block bootstrap samples of \link{ts}
+A matrix, \code{R} columns containing the block bootstrap samples of \code{ts}
 }
 \description{
 Called by \code{\link[=thboot]{thboot()}}, not exposed to the user.

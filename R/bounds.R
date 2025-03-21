@@ -13,9 +13,10 @@
 #' Mainly called by [conditions_bounds()] to check whether a given (alpha, beta)
 #' pair lies within the Keef et al. boundaries.
 #' 
-#' @param a scalar, alpha parameter, in [-1,1]
-#' @param b scalar, beta parameter, in [0,1]
-#' @param p scalar, probability (to compute quantiles of residual distribution), in [0,1]
+#' @param a scalar, alpha parameter, in \eqn{[-1,1]}
+#' @param b scalar, beta parameter, in \eqn{[0,1]}
+#' @param p scalar, probability (to compute quantiles of residual distribution),
+#'   in \eqn{[0,1]}
 #' @param v scalar, threshold, recommended as beyond the maximum observation
 #' @param data bivariate vector, (X,Y) with Y | X>u
 #' @param boolean, does the couple (a,b) satisfy the conditions?
@@ -55,7 +56,7 @@ conditions_verify <- function(a, b, p, v = -log(2*(1-0.99999999)), data) {
 #'
 #' @description
 #' `r lifecycle::badge("experimental")`
-#' Called by [ht2fit()] to get the support of the (alpha, beta) pair during
+#' Called within [dep2fit()] to get the support of the (alpha, beta) pair during
 #' initialisation. Exposed to the user for their own curiosity, at their own
 #' risk!
 #' 
@@ -67,8 +68,8 @@ conditions_verify <- function(a, b, p, v = -log(2*(1-0.99999999)), data) {
 #' and \eqn{\beta}.
 #'
 #' @param fix_par scalar, either the value of \eqn{\alpha} or that of \eqn{\beta}.
-#' @param fix_alpha boolean, `TRUE` if [fix_par] is for \eqn{\alpha}, `FALSE`
-#'   if [fix_par] is for \eqn{\beta}.
+#' @param fix_alpha boolean, `TRUE` if `fix_par` is for \eqn{\alpha}, `FALSE`
+#'   if `fix_par` is for \eqn{\beta}.
 #' @param data 2-column matrix representing the bivariate vector
 #'   \eqn{(X,Y)} with \eqn{Y | X>u}.
 #' @param eps tolerance parameter for finding the boundary value,

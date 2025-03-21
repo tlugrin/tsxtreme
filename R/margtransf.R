@@ -14,7 +14,8 @@
 
 #' Pre-process time series to feed Heffernan--Tawn model
 #' 
-#' Called by [etfit()] and [et2fit()], not exposed to the user.
+#' Called by [thetafit()], [depfit()], [theta2fit()], etc.,
+#' not exposed to the user.
 #' 
 #' @param ts vector of reals, (stationary!) time series on an arbitrary scale.
 #' @param u_mar scalar, marginal (GPD) threshold given as a probability.
@@ -22,8 +23,8 @@
 #' @param method string, "mle" for max likelihood or "mom" for the method of
 #'   moments or "pwm" for proba weighted moments
 #' @param nlag integer, number of lags to be considered.
-#' @param lapl logical, is [ts] on Laplace scale already?
-#' @returns A matrix with [nlag]+1 columns on the Laplace scale, with first
+#' @param lapl logical, is `ts` on Laplace scale already?
+#' @returns A matrix with `nlag`+1 columns on the Laplace scale, with first
 #'   column above threshold.
 #' @keywords internal
 format_ts <- function(ts, u_mar, u_dep, method = c("mle","mom","pwm"), nlag,
@@ -107,12 +108,12 @@ scale_to_margin <- function(x, ts, u, gpd_pars) {
 #' Called by [thetafit()], [chifit()], [theta2fit()]
 #' 
 #' @param p (vector of) reals, (a range of) probabilities which to transform to
-#'   original [ts] scale.
+#'   original `ts` scale.
 #' @param ts vector of reals, time series in original scale.
 #' @param u scalar, threshold given as a probability.
 #' @param gpd_pars vector of 2 reals, scale-shape parameters of the GPD fitted
-#'   to [ts].
-#' @returns A vector of the same length as [p] on [ts] scale.
+#'   to `ts`.
+#' @returns A vector of the same length as `p` on `ts` scale.
 #' @keywords internal
 scale_to_original <- function(p, ts, u, gpd_pars) {
   u_O <- quantile(ts, u)

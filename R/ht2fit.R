@@ -179,7 +179,7 @@ ht2step_2d <- function(data, conditions = TRUE) {
 
 #' Heffernan--Tawn model stepwise fit in the general case
 #' 
-#' Called by [th2fit()]
+#' Called by [dep2fit()]
 #' 
 #' @param data matrix of reals, first column is X>u (Laplace) - other columns are |X>u
 #' @param conditions boolean, TRUE means alpha and beta must satisfy AD/AI constraints

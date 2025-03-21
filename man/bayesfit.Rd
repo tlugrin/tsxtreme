@@ -2,10 +2,13 @@
 % Please edit documentation in R/classes.R
 \name{bayesfit}
 \alias{bayesfit}
+\alias{is.bayesfit}
 \alias{plot.bayesfit}
 \title{Traces from the MCMC output}
 \usage{
 bayesfit()
+
+is.bayesfit(x)
 
 \method{plot}{bayesfit}(x, which = 1:3, ...)
 }
@@ -15,6 +18,9 @@ bayesfit()
 \item{which}{a vector with values in {1,2,3} where 1 is to plot residual
 density functions, 2 is for residual distribution functions and 3 is for
 a contour plot of the posterior distribution function of (alpha, beta).}
+
+\item{...}{other parameters to be passed through to printing or plotting
+functions.}
 }
 \value{
 An object of class "bayesfit" with MCMC traces for:

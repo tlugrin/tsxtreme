@@ -161,23 +161,25 @@ htfit <- function(data,
   t_noo <- matrix(0, nrow = tr_len, ncol = comp_saved)
   t_noc <- numeric(tr_len)
   t_sd  <- array(0, dim = c(tr_len, 8, nlag))#for RAMA
-  if (start_ab[1] == "guesstimate") {
-    fit2step <- ht2step(data, conditions) # lags > 1 will be properly
-    start_a <- fit2step$a                 # initialised in C routine
-    start_b <- fit2step$b                 #  depending on [submodel]
-    if (mode == 0) {
-      message("DEBUG: Guesstimates for alpha and beta: ", start_a,
-              " and ", start_b)
-    }
-  } else if (start_ab[1] == "prior") {
-    start_a <- start_b <- rep(Inf, nlag) # will be properly initialised in C routine
+  if (submodel[1] == "ugm") {
+    start_a <- start_b <- 0
   } else {
-    stop("In htfit(): invalid starting value strategy for start_ab")
+    if (start_ab[1] == "guesstimate") {
+      fit2step <- ht2step(data, conditions) # lags > 1 will be properly
+      start_a <- fit2step$a                 # initialised in C routine
+      start_b <- fit2step$b                 #  depending on [submodel]
+      if (mode == 0) {
+        message("DEBUG: Guesstimates for alpha and beta: ", start_a,
+                " and ", start_b)
+      }
+    } else if (start_ab[1] == "prior") {
+      start_a <- start_b <- rep(Inf, nlag)# will be properly initialised later
+    } else {
+      stop("In htfit(): invalid starting value strategy for start_ab")
+    }
   }
-  if (submodel[1] == "ugm") { submodel <- 0 }
-  else if (submodel[1]=="fom") { submodel <- 1 }
-  else if (submodel[1]=="none") { submodel <- 2 }
-  else { stop("In htfit(): invalid submodel.") }
+  submodel <- switch(submodel[1], "ugm" = 0, "fom" = 1, "none" = 2,
+                     stop("In htfit(): invalid submodel."))
   ## call C(++) wrapper
   fit = .C(C_et_interface,
            as.double(data),

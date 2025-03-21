@@ -15,8 +15,8 @@ conditions_bounds(
 \arguments{
 \item{fix_par}{scalar, either the value of \eqn{\alpha} or that of \eqn{\beta}.}
 
-\item{fix_alpha}{boolean, \code{TRUE} if \link{fix_par} is for \eqn{\alpha}, \code{FALSE}
-if \link{fix_par} is for \eqn{\beta}.}
+\item{fix_alpha}{boolean, \code{TRUE} if \code{fix_par} is for \eqn{\alpha}, \code{FALSE}
+if \code{fix_par} is for \eqn{\beta}.}
 
 \item{data}{2-column matrix representing the bivariate vector
 \eqn{(X,Y)} with \eqn{Y | X>u}.}
@@ -32,7 +32,7 @@ given parameter (either alpha or beta).
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
-Called by \code{\link[=ht2fit]{ht2fit()}} to get the support of the (alpha, beta) pair during
+Called within \code{\link[=dep2fit]{dep2fit()}} to get the support of the (alpha, beta) pair during
 initialisation. Exposed to the user for their own curiosity, at their own
 risk!
 }

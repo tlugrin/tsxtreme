@@ -24,7 +24,7 @@ of proportions (empirical approach) or Monte-Carlo integration.}
 }
 \value{
 Estimate of \eqn{\theta(x,m)} at each value of \eqn{x} given by
-\link{mesh}.
+\code{mesh}.
 }
 \description{
 Simulate residuals from the fitted Heffernan--Tawn model and build (X,Y)

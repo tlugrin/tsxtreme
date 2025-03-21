@@ -15,6 +15,6 @@ ht2step(data, conditions = TRUE)
 An object of class \code{\link[=stepfit]{stepfit()}}.
 }
 \description{
-Called by \code{\link[=th2fit]{th2fit()}}
+Called by \code{\link[=dep2fit]{dep2fit()}}
 }
 \keyword{internal}

@@ -16,11 +16,11 @@ function of the residuals.}
 \item{sorted_res}{vector, empirical distribution function.}
 
 \item{p}{scalar, probability (to compute quantiles of residual distribution),
-in \link{0,1}.}
+in \eqn{[0,1]}.}
 
-\item{a}{scalar, alpha parameter, in \link{-1,1}.}
+\item{a}{scalar, alpha parameter, in \eqn{[-1,1]}.}
 
-\item{b}{scalar, beta parameter, in \link{0,1}.}
+\item{b}{scalar, beta parameter, in \eqn{[0,1]}.}
 
 \item{data}{bivariate vector, \eqn{(X,Y)} with \eqn{Y | X>u}.}
 }
@@ -31,7 +31,7 @@ distribution.
 }
 \description{
 The \code{p_res2} method is called by \code{\link[=th2est]{th2est()}}, the \code{q_res2} method is called
-by \code{\link[=verifies_conditions]{verifies_conditions()}} in order to get quantiles of the empirical
+by \code{\link[=conditions_verify]{conditions_verify()}} in order to get quantiles of the empirical
 distribution function of the residual distribution given
 \eqn{(\alpha,\beta)}. Not exposed to the user.
 }
