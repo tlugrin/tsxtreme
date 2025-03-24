@@ -125,7 +125,7 @@ plot.stepfit <- function(x, ...) {
 #' can be any composition of 1,2 and 3.
 #' 
 #' @param x an arbitrary \R object.
-#' @param which a vector with values in {1,2,3} where 1 is to plot residual
+#' @param which a vector with values in `{1,2,3}` where 1 is to plot residual
 #'   density functions, 2 is for residual distribution functions and 3 is for
 #'   a contour plot of the posterior distribution function of (alpha, beta).
 #' @param ... other parameters to be passed through to printing or plotting
@@ -453,36 +453,38 @@ bayesparams <- function(prop_a = 0.02,
                         comp.saved = deprecated(),
                         batch.size = deprecated()) {
   if (lifecycle::is_present(prop.a)) {
-    lifecycle::deprecate_warn("0.4.0", "thetaruns(prop.a)", "thetaruns(prop_a)")
+    lifecycle::deprecate_warn("0.4.0", "bayesparams(prop.a)",
+                              "bayesparams(prop_a)")
     prop_a <- prop.a
   }
   if (lifecycle::is_present(prop.b)) {
-    lifecycle::deprecate_warn("0.4.0", "thetaruns(prop.b)", "thetaruns(prop_b)")
+    lifecycle::deprecate_warn("0.4.0", "bayesparams(prop.b)",
+                              "bayesparams(prop_b)")
     prop_b <- prop.b
   }
   if (lifecycle::is_present(prior.mu)) {
-    lifecycle::deprecate_warn("0.4.0", "thetaruns(prior.mu)",
-                              "thetaruns(prior_mu)")
+    lifecycle::deprecate_warn("0.4.0", "bayesparams(prior.mu)",
+                              "bayesparams(prior_mu)")
     prior_mu <- prior.mu
   }
   if (lifecycle::is_present(prior.nu)) {
-    lifecycle::deprecate_warn("0.4.0", "thetaruns(prior.nu)",
-                              "thetaruns(prior_nu)")
+    lifecycle::deprecate_warn("0.4.0", "bayesparams(prior.nu)",
+                              "bayesparams(prior_nu)")
     prior_nu <- prior.nu
   }
   if (lifecycle::is_present(prior.eta)) {
-    lifecycle::deprecate_warn("0.4.0", "thetaruns(prior.eta)",
-                              "thetaruns(prior_eta)")
+    lifecycle::deprecate_warn("0.4.0", "bayesparams(prior.eta)",
+                              "bayesparams(prior_eta)")
     prior_eta <- prior.eta
   }
   if (lifecycle::is_present(comp.saved)) {
-    lifecycle::deprecate_warn("0.4.0", "thetaruns(comp.saved)",
-                              "thetaruns(comp_saved)")
+    lifecycle::deprecate_warn("0.4.0", "bayesparams(comp.saved)",
+                              "bayesparams(comp_saved)")
     comp_saved <- comp.saved
   }
   if (lifecycle::is_present(batch.size)) {
-    lifecycle::deprecate_warn("0.4.0", "thetaruns(batch.size)",
-                              "thetaruns(batch_size)")
+    lifecycle::deprecate_warn("0.4.0", "bayesparams(batch.size)",
+                              "bayesparams(batch_size)")
     batch_size <- batch.size
   }
   x <- list(prop_a = prop_a,

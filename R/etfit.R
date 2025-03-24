@@ -185,6 +185,8 @@ etfit <- function(data, R, S, probs, method,
                  thin = par$thin,
                  adapt = par$adapt,
                  batch_size = par$batch_size,
+                 start_ab = par$start_ab,
+                 conditions = par$conditions,
                  mode = par$mode,
                  submodel = submodel)
     if (par$mode < 2)
@@ -323,6 +325,8 @@ chifit <- function(ts,
                  thin = par$thin,
                  adapt = par$adapt,
                  batch_size = par$batch_size,
+                 start_ab = par$start_ab,
+                 conditions = par$conditions,
                  mode = par$mode,
                  submodel = submodel)
     if (par$mode < 2)

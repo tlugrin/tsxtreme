@@ -19,8 +19,8 @@
 #'   in \eqn{[0,1]}
 #' @param v scalar, threshold, recommended as beyond the maximum observation
 #' @param data bivariate vector, (X,Y) with Y | X>u
-#' @param boolean, does the couple (a,b) satisfy the conditions?
-#' @returns A boolean, TRUE if the (alpha, beta) pair is valid, FALSE otherwise.
+#' @returns A boolean, `TRUE` if the \eqn{(\alpha, \beta)} pair is valid,
+#'   `FALSE` otherwise.
 #' @keywords internal
 conditions_verify <- function(a, b, p, v = -log(2*(1-0.99999999)), data) {
   z_q_pos <- q_res2(p, 1, 0, data)

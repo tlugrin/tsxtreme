@@ -178,7 +178,7 @@ compute_runs <- function(data, mesh) {
 #' Called by [thetaruns()].
 #' 
 #' @param ts vector of reals, time series which to estimate theta(x,m) for
-#' @param block_length: integer>0, used for the block-bootstrap CI
+#' @param block_length integer>0, used for the block-bootstrap CI
 #' @param R integer>0, nbr of repetitions used for the block-bootstrap CI
 #' @returns matrix, each column is a block-bootstrapped time series
 #' @keywords internal
