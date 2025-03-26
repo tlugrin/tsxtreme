@@ -7,6 +7,7 @@ In this release I have:
 * fixed a bug in the computation of the Monte-Carlo integration
 * updated documentation throughout the package and migrated it to roxygen format
 * updated code to conform to modern R conventions and soft-deprecated the older notation
+* started a test-suite, focusing on main functionality, yielding to additional input checks
 
 ## Test environments
 * Ubuntu 24.04 local install, R 4.3.3 (2024-02-29)

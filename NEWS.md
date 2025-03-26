@@ -9,6 +9,7 @@
 * add a package vignette
 * update code to conform to modern R conventions
 * deprecate dot-notation methods and arguments
+* additional user input checks
 
 # version 0.3.4
 
