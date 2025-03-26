@@ -149,10 +149,30 @@ htfit <- function(data,
                   submodel = c("fom","none","ugm")) {
   n    <- dim(data)[1]
   nlag <- dim(data)[2]-1
-  if (length(prop_a) < 5) { prop_a <- rep(prop_a[1], 5) }
-  if (length(prop_b) < 3) { prop_b <- rep(prop_b[1], 3) }
+  if (length(prop_a) < 5) {
+    if (length(prop_a) > 1) {
+      warning('"prop_a" should be of length 1 or 5; ignoring indices above 1')
+    }
+    prop_a <- rep(prop_a[1], 5)
+  }
+  if (length(prop_b) < 3) {
+    if (length(prop_b) > 1) {
+      warning('"prop_b" should be of length 1 or 3; ignoring index prop_b[2]')
+    }
+    prop_b <- rep(prop_b[1], 3)
+  }
+  if (comp_saved > trunc) {
+    warning('comp_saved should be no greater than trunc; shrinking comp_saved')
+    comp_saved <- trunc
+  }
   ## build trace containers
+  if (thin < 1) {
+    stop('"thin" must be larger than 1; aborting')
+  }
   tr_len <- floor((maxit-burn)/thin)
+  if (tr_len < 1) {
+    stop('"maxit", "burn" and "thin" yield non-positive trace length; aborting')
+  }
   t_a   <- t_b <- matrix(0, nrow = tr_len, ncol = nlag)
   t_sig <- t_mu <- array(0, dim = c(tr_len, comp_saved, nlag))
   t_w   <- matrix(0, nrow = tr_len, ncol = comp_saved)
@@ -173,7 +193,7 @@ htfit <- function(data,
                 " and ", start_b)
       }
     } else if (start_ab[1] == "prior") {
-      start_a <- start_b <- rep(Inf, nlag)# will be properly initialised later
+      start_a <- start_b <- rep(2, nlag)# will be properly initialised later
     } else {
       stop("In htfit(): invalid starting value strategy for start_ab")
     }

@@ -160,12 +160,12 @@ ht2step_2d <- function(data, conditions = TRUE) {
   ret <- stepfit()
   if (conditions) {
     bds <- conditions_bounds(0,FALSE,data)
-    a   <- runif (1,bds[1],bds[2])
+    a   <- runif(1,bds[1],bds[2])
     bds <- conditions_bounds(a,TRUE,data)
-    b   <- runif (1,bds[1],bds[2])
+    b   <- runif(1,bds[1],bds[2])
   } else {
-    a <- runif (1, -1, 1)
-    b <- runif (1, 0, 1)
+    a <- runif(1, -1, 1)
+    b <- runif(1, 0, 1)
   }
   res <- optim(par = c(a,b,0,1), fn = nllh_ht, gr = grad_ht, data = data,
                conditions = conditions, hessian = TRUE, method = "BFGS")

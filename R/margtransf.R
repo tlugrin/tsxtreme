@@ -64,6 +64,10 @@ scale_ts <- function(ts, u, method = c("mle","mom","pwm")) {
   else{
     ts_U[ei]  <- 1 - p_u*(1+pars[2]/pars[1]*(ts[ei]-u))^(-1/pars[2])
   }
+  if (any(is.na(ts_U[ei]))) {
+    stop(paste("NaNs produced when rescaling time series extremes;",
+               "try a marginal method other than", method))
+  }
   ts_U[!ei] <- rank(ts[!ei])/(n+1)
   ts_L <- numeric(n)
   ts_L[ts_U<0.5]  <- log(2*ts_U[ts_U<0.5])
